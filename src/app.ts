@@ -1,12 +1,25 @@
 import cookieParser from 'cookie-parser';
+import dotenv from 'dotenv';
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import { HttpError } from 'http-errors';
 import methodOverride from 'method-override';
+import mongoose from 'mongoose';
 import logger from 'morgan';
 import indexRouter from './routes/index';
 import usersRouter from './routes/users';
+
+dotenv.config();
+
+const username = process.env.username;
+const password = process.env.password;
+
+const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`
+mongoose.connect(mongoDb);
+const db = mongoose.connection;
+db.on('error',console.error.bind(console,"MongoDB failed connection"));
+
 
 const app = express();
 

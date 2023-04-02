@@ -4,12 +4,21 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
+const dotenv_1 = __importDefault(require("dotenv"));
 const express_1 = __importDefault(require("express"));
 const http_errors_1 = __importDefault(require("http-errors"));
 const method_override_1 = __importDefault(require("method-override"));
+const mongoose_1 = __importDefault(require("mongoose"));
 const morgan_1 = __importDefault(require("morgan"));
 const index_1 = __importDefault(require("./routes/index"));
 const users_1 = __importDefault(require("./routes/users"));
+dotenv_1.default.config();
+const username = process.env.username;
+const password = process.env.password;
+const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`;
+mongoose_1.default.connect(mongoDb);
+const db = mongoose_1.default.connection;
+db.on('error', console.error.bind(console, "MongoDB failed connection"));
 const app = (0, express_1.default)();
 // view engine setup
 app.use((0, method_override_1.default)('_method'));
