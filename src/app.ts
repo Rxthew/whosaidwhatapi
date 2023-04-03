@@ -14,7 +14,7 @@ dotenv.config();
 
 const username = process.env.username;
 const password = process.env.password;
-const applicableCORS = process.env.NODE_ENV === 'production' && process.env.origin ? cors() : cors()
+const applicableCORS = process.env.NODE_ENV === 'production' && process.env.origin ? cors() : cors({origin: process.env.origin})
 
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`
 mongoose.connect(mongoDb);

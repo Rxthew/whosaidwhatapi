@@ -15,7 +15,7 @@ const index_1 = __importDefault(require("./routes/index"));
 dotenv_1.default.config();
 const username = process.env.username;
 const password = process.env.password;
-const applicableCORS = process.env.NODE_ENV === 'production' && process.env.origin ? (0, cors_1.default)() : (0, cors_1.default)();
+const applicableCORS = process.env.NODE_ENV === 'production' && process.env.origin ? (0, cors_1.default)() : (0, cors_1.default)({ origin: process.env.origin });
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`;
 mongoose_1.default.connect(mongoDb);
 const db = mongoose_1.default.connection;
