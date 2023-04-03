@@ -6,6 +6,7 @@ import { HttpError } from 'http-errors';
 import methodOverride from 'method-override';
 import logger from 'morgan';
 import indexRouter from './routes/index';
+import signUpRouter from './routes/signup';
 
 
 const app = express();
@@ -17,6 +18,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/signup', signUpRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
