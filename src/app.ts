@@ -1,13 +1,18 @@
+import bcrypt from 'bcryptjs';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
+import session from 'express-session';
 import createError from 'http-errors';
 import { HttpError } from 'http-errors';
 import methodOverride from 'method-override';
 import mongoose from 'mongoose';
 import logger from 'morgan';
+import passport from 'passport';
+import { Strategy as LocalStrategy }  from 'passport-local';
+import User from './models/user';
 import indexRouter from './routes/index';
 
 dotenv.config();
@@ -23,7 +28,41 @@ db.on('error',console.error.bind(console,"MongoDB failed connection"));
 
 
 const app = express();
+const secret = process.env.secret ?? 'development_secret'
 
+app.use(session({secret, resave: false, saveUninitialized: true}));
+passport.use(new LocalStrategy(async(username, password, done)=>{
+  try{
+    const user = await User.findOne({
+      username: username
+    })
+
+    switch(true){
+      case !user: return done(null,false,{message: 'Username or password is incorrect'})
+      case !await bcrypt.compare(password, (user as any).password): return done(null,false,{message: 'Username or password is incorrect'})
+      default: return done(null,user as any)
+    }
+  }catch(err){
+    return done(err)
+  }
+}));
+
+passport.serializeUser((user,done)=>{
+  done(null,(user as any).id);
+});
+
+passport.deserializeUser(async(id,done)=>{
+  try{
+    const user = await User.findById(id);
+    done(null,user)
+  }
+  catch(error){
+    return done(error)
+  }
+});
+
+app.use(passport.initialize());
+app.use(passport.session());
 app.use(applicableCORS);
 app.use(methodOverride('_method'))
 app.use(logger('dev'));
