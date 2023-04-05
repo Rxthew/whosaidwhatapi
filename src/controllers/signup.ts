@@ -1,6 +1,6 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
-import { body, Result, ValidationError, validationResult } from 'express-validator';
+import { body, header, Result, ValidationError, validationResult } from 'express-validator';
 import User from '../models/user';
 
 
@@ -12,7 +12,19 @@ const _hashPassword = async function(password: string){
         throw error
     }
 
-}
+};
+
+const _noDuplicateUsernames = async function(username:string){
+    try {
+        const user = await User.findOne({
+            username: username
+        });
+        return user ? Promise.reject('This username already exists. Try another one.') : Promise.resolve()
+    }
+    catch(error){
+        throw error
+    } 
+};
 
 const _signUpFailed = function(res:Response, errors: Result<ValidationError>){
         const passedErrors = {errors: errors.mapped()}
@@ -79,10 +91,16 @@ const redirectPage = function(req:Request,res:Response,next:NextFunction){
     if(referer){
         res.redirect(referer);
     }
+    else{
+        res.json({errors: {
+            msg: 'Referer header is not set. Sign-up complete. Please go back to homepage.'
+        }})
+    }
 }
 
 const signUpController = [
-    body('first_name','First name must not be empty')
+    header('Referer', 'Referer header must not be empty.'),
+    body('first_name','First name must not be empty.')
     .trim()
     .isAlpha()
     .withMessage('Characters in this field must be from the alphabet.')
@@ -95,6 +113,7 @@ const signUpController = [
     body('username', 'username must not be empty')
     .trim()
     .escape(),
+    body('username').custom(_noDuplicateUsernames),
     body('password','Password must not be empty')
     .trim()
     .isLength({min: 8})
