@@ -14,6 +14,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy }  from 'passport-local';
 import User from './models/user';
 import indexRouter from './routes/index';
+import signUpRouter from './routes/signup';
 
 dotenv.config();
 
@@ -71,6 +72,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/signup',signUpRouter)
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
