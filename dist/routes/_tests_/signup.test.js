@@ -6,12 +6,12 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const supertest_1 = __importDefault(require("supertest"));
 const testapp_1 = __importDefault(require("../../testapp"));
 describe('Sign up with correct credentials should redirect to host', () => {
-    const origin = 'http://localhost:3000';
+    const origin = 'http://127.0.0.1:3000';
     it('Correct credentials for admin user.', (done) => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Referer', origin)
-            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe', privilege_code: '1234', admin_code: '4321' })
+            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234', admin_code: '4321' })
             .expect(302)
             .end((err, res) => {
             if (err) {
@@ -25,7 +25,7 @@ describe('Sign up with correct credentials should redirect to host', () => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Referer', origin)
-            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe', privilege_code: '1234' })
+            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234' })
             .expect(302)
             .end((err, res) => {
             if (err) {
@@ -39,7 +39,7 @@ describe('Sign up with correct credentials should redirect to host', () => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Referer', origin)
-            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe' })
+            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1' })
             .expect(302)
             .end((err, res) => {
             if (err) {
@@ -57,25 +57,33 @@ describe('Sign up with incorrect credential should return errors.json', () => {
         }
     };
     const origin = 'http://localhost:3000';
-    it('Incorrect credentials for admin user', (done) => {
+    it('Request supplied without Referer header field should throw an error', (done) => {
+        (0, supertest_1.default)(testapp_1.default)
+            .post('/signup')
+            .set('Accept', 'application/json')
+            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1' })
+            .expect(_checkIfErrorsPresent)
+            .expect(400, done);
+    });
+    it('Incorrect credentials for admin user should throw an error', (done) => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Accept', 'application/json')
             .set('Referer', origin)
-            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe', privilege_code: '1234' })
+            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234', admin_code: '1234' })
             .expect(_checkIfErrorsPresent)
             .expect(400, done);
     });
-    it('Incorrect credentials for privileged user', (done) => {
+    it('Incorrect credentials for privileged user should throw an error', (done) => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Accept', 'application/json')
             .set('Referer', origin)
-            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe' })
+            .send({ first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '4321', admin_code: '4321' })
             .expect(_checkIfErrorsPresent)
             .expect(400, done);
     });
-    it('Incorrect credentials for regular user', (done) => {
+    it('Incorrect credentials for regular user should throw an error', (done) => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Accept', 'application/json')
