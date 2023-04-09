@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { body, header, Result, ValidationError, validationResult } from 'express-validator';
-import User from '../models/user';
+import { User } from '../models/user';
+
+
 
 
 const _hashPassword = async function(password: string){
@@ -52,7 +54,7 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
         return null
     };
 
-    const privelegedMember = function(){
+    const privilegedMember = function(){
         if(req.body.privilege_code && req.body.privilege_code){
             return Object.assign(req.body, {member_status: 'privileged'})
     
@@ -65,7 +67,7 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
 
     };
 
-    adminMember() ?? privelegedMember() ?? regularMember()
+    adminMember() ?? privilegedMember() ?? regularMember()
     next()
 };
 
@@ -99,7 +101,8 @@ const redirectPage = function(req:Request,res:Response,next:NextFunction){
 }
 
 const signUpController = [
-    header('Referer', 'Referer header must not be empty.'),
+    header('Referer').exists()
+    .withMessage('Referer header must not be empty.'),
     body('first_name','First name must not be empty.')
     .trim()
     .isAlpha()
@@ -119,7 +122,7 @@ const signUpController = [
     .isLength({min: 8})
     .withMessage('password needs to be a minimum of 8 characters')
     .escape(),
-    body('privlege_code')
+    body('privilege_code')
     .optional({checkFalsy:true})
     .trim()
     .equals('1234')

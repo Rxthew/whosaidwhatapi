@@ -15,7 +15,7 @@ const mongoose_1 = __importDefault(require("mongoose"));
 const morgan_1 = __importDefault(require("morgan"));
 const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
-const user_1 = __importDefault(require("./models/user"));
+const user_1 = require("./models/user");
 const index_1 = __importDefault(require("./routes/index"));
 const signup_1 = __importDefault(require("./routes/signup"));
 dotenv_1.default.config();
@@ -31,7 +31,7 @@ const secret = process.env.secret ?? 'development_secret';
 app.use((0, express_session_1.default)({ secret, resave: false, saveUninitialized: true }));
 passport_1.default.use(new passport_local_1.Strategy(async (username, password, done) => {
     try {
-        const user = await user_1.default.findOne({
+        const user = await user_1.User.findOne({
             username: username
         });
         switch (true) {
@@ -49,7 +49,7 @@ passport_1.default.serializeUser((user, done) => {
 });
 passport_1.default.deserializeUser(async (id, done) => {
     try {
-        const user = await user_1.default.findById(id);
+        const user = await user_1.User.findById(id);
         done(null, user);
     }
     catch (error) {

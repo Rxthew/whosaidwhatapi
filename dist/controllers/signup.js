@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const express_validator_1 = require("express-validator");
-const user_1 = __importDefault(require("../models/user"));
+const user_1 = require("../models/user");
 const _hashPassword = async function (password) {
     try {
         const result = await bcryptjs_1.default.hash(password, 10);
@@ -17,7 +17,7 @@ const _hashPassword = async function (password) {
 };
 const _noDuplicateUsernames = async function (username) {
     try {
-        const user = await user_1.default.findOne({
+        const user = await user_1.User.findOne({
             username: username
         });
         return user ? Promise.reject('This username already exists. Try another one.') : Promise.resolve();
@@ -48,7 +48,7 @@ const assignMembershipCode = function (req, res, next) {
         }
         return null;
     };
-    const privelegedMember = function () {
+    const privilegedMember = function () {
         if (req.body.privilege_code && req.body.privilege_code) {
             return Object.assign(req.body, { member_status: 'privileged' });
         }
@@ -57,13 +57,13 @@ const assignMembershipCode = function (req, res, next) {
     const regularMember = function () {
         return Object.assign(req.body, { member_status: 'regular' });
     };
-    adminMember() ?? privelegedMember() ?? regularMember();
+    adminMember() ?? privilegedMember() ?? regularMember();
     next();
 };
 const saveUser = async function (req, res, next) {
     try {
         const hashed = await _hashPassword(req.body.password);
-        const user = new user_1.default({
+        const user = new user_1.User({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
             username: req.body.username,
@@ -89,7 +89,8 @@ const redirectPage = function (req, res, next) {
     }
 };
 const signUpController = [
-    (0, express_validator_1.header)('Referer', 'Referer header must not be empty.'),
+    (0, express_validator_1.header)('Referer').exists()
+        .withMessage('Referer header must not be empty.'),
     (0, express_validator_1.body)('first_name', 'First name must not be empty.')
         .trim()
         .isAlpha()
@@ -109,7 +110,7 @@ const signUpController = [
         .isLength({ min: 8 })
         .withMessage('password needs to be a minimum of 8 characters')
         .escape(),
-    (0, express_validator_1.body)('privlege_code')
+    (0, express_validator_1.body)('privilege_code')
         .optional({ checkFalsy: true })
         .trim()
         .equals('1234')
