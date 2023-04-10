@@ -34,12 +34,7 @@ user_1.User.prototype.save = mockSave;
 describe("Sign up should work when saving user, but should throw error if same username", () => {
     const databaseMockImplementation = function (name) {
         return mockFindOne.mockImplementationOnce((queryObject) => {
-            if (queryObject && queryObject.username === name) {
-                return true;
-            }
-            else {
-                return false;
-            }
+            return queryObject && queryObject.username === name;
         });
     };
     beforeEach(() => {

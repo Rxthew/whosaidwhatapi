@@ -55,8 +55,8 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
     };
 
     const privilegedMember = function(){
-        if(req.body.privilege_code && req.body.privilege_code){
-            return Object.assign(req.body, {member_status: 'privileged'})
+        if(req.body.privilege_code && req.body.privilege_code === '1234'){
+           return Object.assign(req.body, {member_status: 'privileged'})
     
         }
         return null
@@ -66,6 +66,7 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
         return Object.assign(req.body, {member_status: 'regular'})
 
     };
+
 
     adminMember() ?? privilegedMember() ?? regularMember()
     next()

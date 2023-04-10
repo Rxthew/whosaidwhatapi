@@ -49,7 +49,7 @@ const assignMembershipCode = function (req, res, next) {
         return null;
     };
     const privilegedMember = function () {
-        if (req.body.privilege_code && req.body.privilege_code) {
+        if (req.body.privilege_code && req.body.privilege_code === '1234') {
             return Object.assign(req.body, { member_status: 'privileged' });
         }
         return null;

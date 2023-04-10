@@ -43,13 +43,7 @@ describe("Sign up should work when saving user, but should throw error if same u
 
     const databaseMockImplementation = function(name:string){
         return mockFindOne.mockImplementationOnce((queryObject: Record<string,string>)=>{
-            if(queryObject && queryObject.username === name){
-                return true
-            }
-            else{
-                return false
-            }
-    
+            return queryObject && queryObject.username === name
         });
     };
         
@@ -77,8 +71,6 @@ describe("Sign up should work when saving user, but should throw error if same u
     databaseMockImplementation('johndoe')
 
     it('Expect bad request if duplicate usernames, with save not being called',(done) => {
-        
-
         request(app)
         .post('/signup')
         .set('Referer', origin)
