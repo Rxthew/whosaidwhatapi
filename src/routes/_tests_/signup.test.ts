@@ -4,6 +4,7 @@ import { Response } from 'supertest'
 import app from '../../testapp';
 import {User} from '../../models/user'
 
+
 jest.mock('../../models/user');
 
 const generateMocks = function(){
@@ -15,6 +16,7 @@ const generateMocks = function(){
         mockSave,
     }
 };
+
 
 const addOns = function(){
     
@@ -39,40 +41,25 @@ User.prototype.save = mockSave;
 
 describe("Sign up should work when saving user, but should throw error if same username",() => {
 
-    const generateStatefulUsername = function(){
-        let state = ''
-        const changeStatefulUsername = function(newState:string ){
-            state = newState;
-            return 
-        }
-        const getStatefulUsername = function(){
-            return state;
-        }
-
-        return {
-            changeStatefulUsername,
-            getStatefulUsername
-        }
-    };
-
-    const {changeStatefulUsername, getStatefulUsername} = generateStatefulUsername();
-
+    const databaseMockImplementation = function(name:string){
+        return mockFindOne.mockImplementationOnce((queryObject: Record<string,string>)=>{
+            if(queryObject && queryObject.username === name){
+                return true
+            }
+            else{
+                return false
+            }
     
-    mockFindOne.mockImplementation((queryObject: Record<string,string>)=>{
-        if(queryObject && queryObject.username === getStatefulUsername()){
-            return true
-        }
-        else{
-            return false
-        }
-
-    });
-
+        });
+    };
+        
     beforeEach(()=>{
         mockSave.mockClear()
     })
 
     const origin = 'http://127.0.0.1:3000';
+    databaseMockImplementation('jackdoe');
+
     it('Expect redirection to origin with save being called',(done) => {
         request(app)
         .post('/signup')
@@ -87,8 +74,10 @@ describe("Sign up should work when saving user, but should throw error if same u
         })
     });
 
+    databaseMockImplementation('johndoe')
+
     it('Expect bad request if duplicate usernames, with save not being called',(done) => {
-        changeStatefulUsername('johndoe');
+        
 
         request(app)
         .post('/signup')

@@ -32,33 +32,21 @@ const { checkIfErrorsPresent, origin } = addOns();
 user_1.User.findOne = mockFindOne;
 user_1.User.prototype.save = mockSave;
 describe("Sign up should work when saving user, but should throw error if same username", () => {
-    const generateStatefulUsername = function () {
-        let state = '';
-        const changeStatefulUsername = function (newState) {
-            state = newState;
-            return;
-        };
-        const getStatefulUsername = function () {
-            return state;
-        };
-        return {
-            changeStatefulUsername,
-            getStatefulUsername
-        };
+    const databaseMockImplementation = function (name) {
+        return mockFindOne.mockImplementationOnce((queryObject) => {
+            if (queryObject && queryObject.username === name) {
+                return true;
+            }
+            else {
+                return false;
+            }
+        });
     };
-    const { changeStatefulUsername, getStatefulUsername } = generateStatefulUsername();
-    mockFindOne.mockImplementation((queryObject) => {
-        if (queryObject && queryObject.username === getStatefulUsername()) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    });
     beforeEach(() => {
         mockSave.mockClear();
     });
     const origin = 'http://127.0.0.1:3000';
+    databaseMockImplementation('jackdoe');
     it('Expect redirection to origin with save being called', (done) => {
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
@@ -74,8 +62,8 @@ describe("Sign up should work when saving user, but should throw error if same u
             done();
         });
     });
+    databaseMockImplementation('johndoe');
     it('Expect bad request if duplicate usernames, with save not being called', (done) => {
-        changeStatefulUsername('johndoe');
         (0, supertest_1.default)(testapp_1.default)
             .post('/signup')
             .set('Referer', origin)
