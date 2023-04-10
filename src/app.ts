@@ -1,4 +1,5 @@
 import bcrypt from 'bcryptjs';
+import MongoStore from 'connect-mongo';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
 import dotenv from 'dotenv';
@@ -30,8 +31,11 @@ db.on('error',console.error.bind(console,"MongoDB failed connection"));
 
 const app = express();
 const secret = process.env.secret ?? 'development_secret'
+const sessionStore = MongoStore.create({
+  mongoUrl: mongoDb
+})
 
-app.use(session({secret, resave: false, saveUninitialized: true}));
+app.use(session({secret, resave: false, saveUninitialized: true, store: sessionStore}));
 passport.use(new LocalStrategy(async(username, password, done)=>{
   try{
     const user = await User.findOne({

@@ -4,6 +4,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
+const connect_mongo_1 = __importDefault(require("connect-mongo"));
 const cookie_parser_1 = __importDefault(require("cookie-parser"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
@@ -28,7 +29,10 @@ const db = mongoose_1.default.connection;
 db.on('error', console.error.bind(console, "MongoDB failed connection"));
 const app = (0, express_1.default)();
 const secret = process.env.secret ?? 'development_secret';
-app.use((0, express_session_1.default)({ secret, resave: false, saveUninitialized: true }));
+const sessionStore = connect_mongo_1.default.create({
+    mongoUrl: mongoDb
+});
+app.use((0, express_session_1.default)({ secret, resave: false, saveUninitialized: true, store: sessionStore }));
 passport_1.default.use(new passport_local_1.Strategy(async (username, password, done) => {
     try {
         const user = await user_1.User.findOne({
