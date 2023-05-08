@@ -18,6 +18,7 @@ const passport_1 = __importDefault(require("passport"));
 const passport_local_1 = require("passport-local");
 const user_1 = require("./models/user");
 const index_1 = __importDefault(require("./routes/index"));
+const login_1 = __importDefault(require("./routes/login"));
 const signup_1 = __importDefault(require("./routes/signup"));
 dotenv_1.default.config();
 const username = process.env.username;
@@ -69,6 +70,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use('/', index_1.default);
+app.use('/login', login_1.default);
 app.use('/signup', signup_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

@@ -9,6 +9,7 @@ const http_errors_1 = __importDefault(require("http-errors"));
 const method_override_1 = __importDefault(require("method-override"));
 const morgan_1 = __importDefault(require("morgan"));
 const index_1 = __importDefault(require("./routes/index"));
+const login_1 = __importDefault(require("./routes/login"));
 const signup_1 = __importDefault(require("./routes/signup"));
 const app = (0, express_1.default)();
 app.use((0, method_override_1.default)('_method'));
@@ -17,6 +18,7 @@ app.use(express_1.default.json());
 app.use(express_1.default.urlencoded({ extended: false }));
 app.use((0, cookie_parser_1.default)());
 app.use('/', index_1.default);
+app.use('/login', login_1.default);
 app.use('/signup', signup_1.default);
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
