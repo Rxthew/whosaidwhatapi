@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { body, header, Result, ValidationError, validationResult } from 'express-validator';
+import { db } from '../app';
 import { User } from '../models/user';
+
 
 
 
@@ -82,7 +84,11 @@ const saveUser = async function(req:Request,res:Response,next:NextFunction){
             password: hashed,
             member_status: req.body.member_status 
         })
-        await user.save();
+        
+        await db.transaction(async function finaliseSaveUser(session){
+            await user.save({session});
+        }).catch((err:Error)=> {throw err})
+        
     } catch(err){
         console.log(err)
     }
