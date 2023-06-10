@@ -1,6 +1,14 @@
 
 import { Request, Response, NextFunction } from "express";
 import Post from "../models/post";
+import { User } from "../models/user";
+
+type UserType = InstanceType<typeof User>;
+declare global {
+    namespace Express {
+        interface User extends UserType {}
+    }
+}
 
 const getWithAnonymisedComments = async function(){
     try{
@@ -70,8 +78,8 @@ const getWithPopulatedComments = async function(){
 const getAllPosts = async function(req:Request, res:Response, next:NextFunction){
     if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
         try{
-            const comments = req.isAuthenticated() ? await getWithPopulatedComments() : await getWithAnonymisedComments()
-            comments ? Object.assign(req, {comments: comments}) : false
+            const posts = req.isAuthenticated() ? await getWithPopulatedComments() : await getWithAnonymisedComments()
+            posts ? Object.assign(req.body, {posts: posts}) : false
             next()
         }
         catch(err){
@@ -79,4 +87,42 @@ const getAllPosts = async function(req:Request, res:Response, next:NextFunction)
         }
         
     }
+    else{
+        res.json({err: {msg: 'Could not authenticate user.'}})
+    }
+        
+    
 };
+
+const getUser = async function(req:Request, res:Response, next:NextFunction){
+    if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
+        const user = req.isAuthenticated() ? req.user : false;
+        if(user){
+            Object.assign(req.body,{user: {username: user.username, member_status: user.member_status}})
+        }
+        next()
+    }
+    else{
+        res.json({err: {msg: 'Could not authenticate user.'}})
+    }
+};
+
+const returnIndexData = function(req:Request, res:Response, next:NextFunction){
+    const responseBody = {posts: req.body.posts};
+    req.body.user ? Object.assign(responseBody, {user: req.body.user}) : false;
+    res.json(responseBody);
+};
+
+const indexController = [
+    getUser,
+    getAllPosts,
+    returnIndexData
+
+];
+
+
+
+export default indexController
+
+
+
