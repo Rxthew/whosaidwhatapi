@@ -1,8 +1,8 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
-import { body, Result, ValidationError, validationResult } from 'express-validator';
+import { body } from 'express-validator';
 import mongoose from 'mongoose';
-import { redirectPage } from './helpers/services';
+import { basicValidation, redirectPage } from './helpers/services';
 import { User } from '../models/user';
 
 
@@ -28,22 +28,7 @@ const _noDuplicateUsernames = async function(username:string){
     } 
 };
 
-const _signUpFailed = function(res:Response, errors: Result<ValidationError>){
-        const passedErrors = {errors: errors.mapped()}
-        res.status(400).json(passedErrors);
-        return
-};
-
-const signUpValidation = function(req:Request,res:Response,next:NextFunction){
-    const errors = validationResult(req)
-    const checkEmpty = errors.isEmpty();
-    if(checkEmpty){
-        next()
-    }
-    else{
-        _signUpFailed(res,errors)
-    }
-};
+const signUpValidation = basicValidation;
 
 const assignMembershipCode = function(req:Request, res: Response, next:NextFunction){
 
