@@ -1,11 +1,9 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
-import { body, header, Result, ValidationError, validationResult } from 'express-validator';
+import { body, Result, ValidationError, validationResult } from 'express-validator';
 import mongoose from 'mongoose';
+import { redirectPage } from './helpers/services';
 import { User } from '../models/user';
-
-
-
 
 
 const _hashPassword = async function(password: string){
@@ -96,15 +94,6 @@ const saveUser = async function(req:Request,res:Response,next:NextFunction){
     next()
 };
 
-const redirectPage = function(req:Request,res:Response,next:NextFunction){
-    const referer = req.get('Referer')
-    if(referer){
-        res.redirect(referer);
-    }
-    else{
-        next()
-    }
-}
 
 const confirmSignup = function(req:Request, res:Response, next: NextFunction){
     res.json({status: 'Sign-up successful.' })
