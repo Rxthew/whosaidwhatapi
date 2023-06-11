@@ -1,10 +1,24 @@
 
+import { connection } from 'mongoose';
 import request from 'supertest';
 import { Response } from 'supertest'
 import app from '../../testapp';
 import {User} from '../../models/user'
 
-
+jest.mock('mongoose', () => {
+    const actualModule = jest.requireActual('mongoose');
+    return {
+        __esModule: true,
+        default: {
+            ...actualModule,
+            connection: {transaction: async (save:() => Promise<void>) => {
+                await save()
+                return {catch: (err:Error) => {err ? console.log(err) : false }}
+            }}
+        }
+        
+    }
+});
 jest.mock('../../models/user');
 
 const generateMocks = function(){
