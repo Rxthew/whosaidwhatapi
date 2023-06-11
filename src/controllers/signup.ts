@@ -102,15 +102,15 @@ const redirectPage = function(req:Request,res:Response,next:NextFunction){
         res.redirect(referer);
     }
     else{
-        res.json({errors: {
-            msg: 'Referer header is not set. Sign-up complete. Please go back to homepage.'
-        }})
+        next()
     }
 }
 
+const confirmSignup = function(req:Request, res:Response, next: NextFunction){
+    res.json({status: 'Sign-up successful.' })
+}
+
 const signUpController = [
-    header('Referer').exists()
-    .withMessage('Referer header must not be empty.'),
     body('first_name','First name must not be empty.')
     .trim()
     .isAlpha()
@@ -146,6 +146,7 @@ const signUpController = [
     assignMembershipCode,
     saveUser,
     redirectPage,
+    confirmSignup
 ];
 
 export default signUpController

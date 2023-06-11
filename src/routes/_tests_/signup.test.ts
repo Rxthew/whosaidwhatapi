@@ -145,16 +145,53 @@ describe('Sign up with correct credentials should redirect to origin', ()=>{
 
 });
 
-describe('Sign up with incorrect credential should return errors.json',()=>{
-   
-    it('Request supplied without Referer header field should throw an error', (done) =>{
+describe('Signup with correct credentials without Referer should return successful sign-up report', () => {
+
+    it('Correct credentials for admin user.', (done) => {        
         request(app)
         .post('/signup')
-        .set('Accept','application/json')
+        .set('Accept', 'application/json')
+        .send({first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234', admin_code: '4321'})
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).toHaveProperty('status', 'Sign-up successful.')
+            await done()
+        })        
+
+    });
+
+    it('Correct credentials for privileged user.', (done) => {        
+        request(app)
+        .post('/signup')
+        .set('Accept', 'application/json')
+        .send({first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234'})
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).toHaveProperty('status', 'Sign-up successful.')
+            await done()
+        })        
+
+    });
+
+    it('Correct credentials for regular user.', (done) => {        
+        request(app)
+        .post('/signup')
+        .set('Accept', 'application/json')
         .send({first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1'})
-        .expect(checkIfErrorsPresent)
-        .expect(400,done)
-    })
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).toHaveProperty('status', 'Sign-up successful.')
+            await done()
+        })        
+
+    });
+});
+
+describe('Sign up with incorrect credential should return errors.json',()=>{
+   
     it('Incorrect credentials for admin user should throw an error', (done)=>{
         request(app)
         .post('/signup')
