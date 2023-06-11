@@ -23,7 +23,7 @@ const getWithAnonymisedComments = async function(){
                 select: {
                     content: 1,
                      date: 1, 
-                     _id: 0, 
+                     _id: 1, 
                      post: 0, 
                      user: 0
                     }
@@ -52,13 +52,14 @@ const getWithPopulatedComments = async function(){
                     content: 1, 
                     date: 1, 
                     user: 1, 
-                    _id: 0, 
+                    _id: 1, 
                     post: 0
                 },
                 populate: {
                     path: 'user',
                     select: {
                     username: 1,
+                    _id: 0,
                     first_name: 0,
                     last_name: 0,
                     password: 0,
@@ -98,7 +99,7 @@ const getUser = async function(req:Request, res:Response, next:NextFunction){
     if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
         const user = req.isAuthenticated() ? req.user : false;
         if(user){
-            Object.assign(req.body,{user: {username: user.username, member_status: user.member_status}})
+            Object.assign(req.body,{user: {username: user.username, member_status: user.member_status, _id: user._id}})
         }
         next()
     }

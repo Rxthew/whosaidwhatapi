@@ -30,7 +30,7 @@ const authTestSetup = function(){
   const isAuthenticated = function(req:Request, res:Response, next:NextFunction){
       const isAuth = function(){return _authTestVariable.authenticated};
       Object.assign(req, {isAuthenticated: isAuth});
-      Object.assign(req, { user: {username: 'Jane Doe', member_status: 'regular'} })
+      Object.assign(req, { user: {username: 'Jane Doe', member_status: 'regular', _id: '200'} })
       next();
   };
 
