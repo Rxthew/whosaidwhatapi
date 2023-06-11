@@ -26,7 +26,7 @@ const applicableCORS = process.env.NODE_ENV === 'production' && process.env.orig
 
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`
 mongoose.connect(mongoDb);
-export const db = mongoose.connection;
+const db = mongoose.connection;
 db.on('error',console.error.bind(console,"MongoDB failed connection"));
 
 

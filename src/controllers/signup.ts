@@ -1,7 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { body, header, Result, ValidationError, validationResult } from 'express-validator';
-import { db } from '../app';
+import mongoose from 'mongoose';
 import { User } from '../models/user';
 
 
@@ -76,6 +76,7 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
 
 const saveUser = async function(req:Request,res:Response,next:NextFunction){
     try{
+        const db = mongoose.connection;
         const hashed = await _hashPassword(req.body.password)
         const user = new User({
             first_name: req.body.first_name,
