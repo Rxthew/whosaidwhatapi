@@ -1,45 +1,17 @@
-import {Request, Response as ExpressResponse, NextFunction} from 'express';
 import request from 'supertest';
-import { Response } from 'supertest'
-import app from '../../testapp';
+import app, { toggleAuthTestVariable } from '../../testapp';
 import Post from '../../models/post';
 
 jest.mock('../../models/post');
-
-
-const authTestSetup = function(){
-    const _authTestVariable = {authenticated: true};
-    
-    const toggleAuthTestVariable = function(){
-        const newStatus = _authTestVariable.authenticated ? _authTestVariable.authenticated = false : _authTestVariable.authenticated = true;
-        return _authTestVariable.authenticated
-    };
-
-
-    const isAuthenticated = function(req:Request, res: ExpressResponse, next:NextFunction){
-        const isAuth = function(){return _authTestVariable.authenticated};
-        Object.assign(req, {isAuthenticated: isAuth});
-        Object.assign(req, { user: {username: 'Jane Doe', member_status: 'regular'} })
-        next();
-    };
-
-    return {
-        isAuthenticated,
-        toggleAuthTestVariable
-        
-    }
-
-}
-
-const {isAuthenticated, toggleAuthTestVariable} = authTestSetup();
-app.use(isAuthenticated);
 
 const generateMocks = function(){
     const mockFind = jest.fn(() => {
         return {
             populate: (obj: Record<string, any>) => {
                 return { 
-                    exec: () => obj.select.user
+                    exec: () => {return {
+                        comment_author: obj.select.user ? 'visible' : 'anonymous'
+                    }}
                 }
             },
         }
@@ -50,9 +22,71 @@ const generateMocks = function(){
     }
 };
 
+
 const { mockFind } = generateMocks();
 
 (Post as Record<'find',any>).find = mockFind;
 
+describe('index call should return user and visible users for comments where authenticated, else just posts with comments', () => {
+
+    it('Authenticated: Expect dummy user object in response body"', (done) => {
+        toggleAuthTestVariable(true);
+
+        request(app)
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).toHaveProperty('user.username', 'Jane Doe')
+            expect(res.body).toHaveProperty('user.member_status', 'regular')
+            await done()
+        })
+    });
+
+    it('Authenticated: Expect user (for comments) to be selected as part of query', (done) => {
+        toggleAuthTestVariable(true);
+
+        request(app)
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).toHaveProperty('posts.comment_author', 'visible')
+            await done()
+        })
+        
+    });
+
+    it('Not authenticated: Expect dummy user object to be absent from response body', (done) => {
+        toggleAuthTestVariable(false);
+
+        request(app)
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).not.toHaveProperty('user')
+            await done()
+        })
+    });
+
+    it('Not authenticated: Expect user (for comments) not to be selected as part of query', (done) => {
+        toggleAuthTestVariable(false);
+
+        request(app)
+        .get('/')
+        .set('Accept', 'application/json')
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return await done(err)}
+            expect(res.body).toHaveProperty('posts.comment_author', 'anonymous')
+            await done()
+        })
+    });
+    
+})
 
 

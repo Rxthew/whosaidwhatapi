@@ -18,7 +18,34 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
+const authTestSetup = function(){
+  const _authTestVariable = {authenticated: true};
+  
+  const toggleAuthTestVariable = function(authenticate:boolean){
+      const newStatus = authenticate ? _authTestVariable.authenticated = true : _authTestVariable.authenticated = false;
+      return _authTestVariable.authenticated
+  };
+
+
+  const isAuthenticated = function(req:Request, res:Response, next:NextFunction){
+      const isAuth = function(){return _authTestVariable.authenticated};
+      Object.assign(req, {isAuthenticated: isAuth});
+      Object.assign(req, { user: {username: 'Jane Doe', member_status: 'regular'} })
+      next();
+  };
+
+  return {
+      isAuthenticated,
+      toggleAuthTestVariable
+      
+  }
+
+}
+
+export const {isAuthenticated, toggleAuthTestVariable} = authTestSetup();
+
+
+app.use('/', [isAuthenticated, indexRouter]);
 app.use('/login',loginRouter);
 app.use('/signup', signUpRouter);
 
