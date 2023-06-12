@@ -70,11 +70,12 @@ const saveUser = async function(req:Request,res:Response,next:NextFunction){
         })
         
         await db.transaction(async function finaliseSaveUser(session){
-            await user.save({session});
+            await user.save({session}).catch((err:Error)=> {throw err});
         }).catch((err:Error)=> {throw err})
         
     } catch(err){
         console.log(err)
+        res.json({err: err})
     }
     next()
 };
