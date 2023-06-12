@@ -5,6 +5,7 @@ import createError from 'http-errors';
 import { HttpError } from 'http-errors';
 import methodOverride from 'method-override';
 import logger from 'morgan';
+import commentRouter from './routes/comment';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
 import signUpRouter from './routes/signup';
@@ -48,6 +49,7 @@ export const {isAuthenticated, toggleAuthTestVariable} = authTestSetup();
 app.use('/', [isAuthenticated, indexRouter]);
 app.use('/login',loginRouter);
 app.use('/signup', signUpRouter);
+app.use('/comment',commentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

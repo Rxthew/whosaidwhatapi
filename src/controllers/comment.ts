@@ -93,7 +93,7 @@ const createComment = async function(req:Request, res:Response, next:NextFunctio
 };
 
 
-const postCommentController = [
+export const postCommentController = [
     _checkUserIsAuthenticated,
     body('content','Content must not be empty.')
     .trim()

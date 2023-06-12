@@ -14,6 +14,7 @@ import logger from 'morgan';
 import passport from 'passport';
 import { Strategy as LocalStrategy }  from 'passport-local';
 import { User } from './models/user';
+import commentRouter from './routes/comment';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
 import signUpRouter from './routes/signup';
@@ -79,6 +80,7 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 app.use('/login',loginRouter);
 app.use('/signup',signUpRouter);
+app.use('/comment',commentRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
