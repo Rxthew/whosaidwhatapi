@@ -11,8 +11,8 @@ jest.mock('mongoose', () => {
         __esModule: true,
         default: {
             ...actualModule,
-            connection: {transaction: async (save:() => Promise<void>) => {
-                await save()
+            connection: {transaction: (save:() => Promise<void> | Error) => {
+                save()
                 return {catch: (err:Error) => {err ? console.log(err) : false }}
             }}
         }
@@ -23,7 +23,9 @@ jest.mock('../../models/user');
 
 const generateMocks = function(){
     const mockFindOne = jest.fn();
-    const mockSave = jest.fn();
+    const mockSave = jest.fn().mockImplementation(() =>{
+        return Promise.resolve()
+    })
 
     return {
         mockFindOne,
