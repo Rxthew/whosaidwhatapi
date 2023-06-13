@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import  Comment  from '../models/comment';
 import Post from '../models/post';
 import { User } from '../models/user';
@@ -14,12 +14,12 @@ const _checkUserIsAuthenticated = function(req:Request, res:Response, next:NextF
         next()
     }
     else{
-        res.json({'error': 'User is not authenticated'})
+        res.status(400).json({'errors': {msg: 'User is not authenticated'}})
 
     }  
 };
 
-const _checkValidityOfPostId = function(id:string | ObjectId | unknown){
+const _checkValidityOfPostId = function(id:string | mongoose.Types.ObjectId | unknown){
     const result = mongoose.isObjectIdOrHexString(id);
     if(!result){
         throw new Error('Post\'s object id is invalid.')
@@ -28,7 +28,7 @@ const _checkValidityOfPostId = function(id:string | ObjectId | unknown){
 
 };
 
-const _checkValidityOfUserId = function(id:string | ObjectId | unknown){
+const _checkValidityOfUserId = function(id:string | mongoose.Types.ObjectId | unknown){
     const result = mongoose.isObjectIdOrHexString(id);
     if(!result){
         throw new Error('User\'s object id is invalid.')
@@ -41,7 +41,7 @@ const _generateDate = function(){  //To refine
     return Date.now(); 
 };
 
-const _postExistsInDatabase = async function(id:string | ObjectId | unknown){
+const _postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await Post.exists({'_id': id}).catch((err:Error)=>{throw err});
     if(!result){
         throw new Error('Post object id is not in database')
@@ -51,7 +51,7 @@ const _postExistsInDatabase = async function(id:string | ObjectId | unknown){
 
 };
 
-const _userExistsInDatabase = async function(id:string | ObjectId | unknown){
+const _userExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await User.exists({'_id': id}).catch((err:Error)=>{throw err});
     if(!result){
         throw new Error('User object id is not in database')
@@ -97,12 +97,18 @@ export const postCommentController = [
     _checkUserIsAuthenticated,
     body('content','Content must not be empty.')
     .trim()
+    .notEmpty()
+    .withMessage('Content must not be empty.')
     .escape(),
     body('post','Post id must not be empty.')
     .trim()
+    .notEmpty()
+    .withMessage('Post id must not be empty.')
     .escape(),
     body('user','User id must not be empty.')
     .trim()
+    .notEmpty()
+    .withMessage('User id must not be empty.')
     .escape(),
     body('post').custom(_checkValidityOfPostId),
     body('user').custom(_checkValidityOfUserId),
