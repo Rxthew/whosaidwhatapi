@@ -28,8 +28,13 @@ jest.mock('mongoose', () => {
 
 
 const mockCreate = jest.fn();
+const mockDeleteOne = jest.fn();
 const mockUpdateOne = jest.fn();
 Comment.create = mockCreate.mockImplementation(()=>{
+    return Promise.resolve()
+});
+
+Comment.deleteOne = mockDeleteOne.mockImplementation(()=>{
     return Promise.resolve()
 });
 
@@ -73,6 +78,7 @@ const databaseMockGenerator = function(modelMockExists: typeof mockPostExists | 
  
 
 describe('Comment creation should work if user authenticated and post id and user id are validated', () => {
+    
     const postId = new mongoose.Types.ObjectId();
     const userId = new mongoose.Types.ObjectId();
     
@@ -209,7 +215,72 @@ describe('Comment creation should work if user authenticated and post id and use
     })
 });
 
+describe('Comment delete should work if user authenticated and _id is validated', () => {
+    
+    const commentId = new mongoose.Types.ObjectId();
+  
+    beforeEach(()=>{
+        mockDeleteOne.mockClear()
+    })
+
+    it('Comment should not be deleted if user is not authenticated', (done) => {
+        toggleAuthTestVariable(false);
+
+        request(app)
+        .delete('/comment')
+        .set('Accept', 'application/json')
+        .send({ _id: commentId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockDeleteOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
+    
+
+    it('Expect comment delete to redirect to origin if referer header is supplied', (done) => {
+        const origin = 'http://127.0.0.1:3000';
+        toggleAuthTestVariable(true);
+
+        request(app)
+        .delete('/comment')
+        .set('Referer', origin)
+        .set('Accept', 'application/json')
+        .send({ _id: commentId})
+        .expect(302)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockDeleteOne).toHaveBeenCalled()
+            done()
+        })
+
+    });
+    
+    it('Expect comment creation to return an object with comment created status if referer header is not present', (done) => {
+        toggleAuthTestVariable(true);
+
+        request(app)
+        .delete('/comment')
+        .set('Accept', 'application/json')
+        .send({ _id: commentId})
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockDeleteOne).toHaveBeenCalled()
+            expect(res.body).toHaveProperty('status', 'Comment deleted successfully.')
+            done()
+        })
+
+    });
+});
+
+
+
 describe('Comment update should work if user authenticated and _id is validated', () => {
+    
     const commentId = new mongoose.Types.ObjectId();
     const postId = new mongoose.Types.ObjectId();
     const userId = new mongoose.Types.ObjectId();

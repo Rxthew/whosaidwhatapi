@@ -1,8 +1,9 @@
 import express from 'express';
-import { postCommentController, putCommentController } from '../controllers/comment';
+import { deleteCommentController, postCommentController, putCommentController } from '../controllers/comment';
 
 const router = express.Router();
 
+router.delete('/',deleteCommentController);
 router.post('/', postCommentController);
 router.put('/', putCommentController);
 

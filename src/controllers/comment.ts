@@ -85,6 +85,9 @@ const confirmCommentCreated = function(req:Request, res:Response, next: NextFunc
     res.json({status: 'Comment created successfully.' })
 };
 
+const confirmCommentDeleted = function(req:Request, res:Response, next: NextFunction){
+    res.json({status: 'Comment deleted successfully.' })
+};
 
 const confirmCommentUpdated = function(req:Request, res:Response, next: NextFunction){
     res.json({status: 'Comment updated successfully.' })
@@ -99,6 +102,28 @@ const createComment = async function(req:Request, res:Response, next:NextFunctio
                 post: new Types.ObjectId(req.body.post.trim()), 
                 user: new Types.ObjectId(req.body.user.trim()), 
                 date: _generateDate()}], {session})
+            .catch(
+                (err:Error)=> {throw err}
+                )
+
+        }).catch(
+            (err:Error)=> {throw err}
+            )
+    }catch(err){
+        console.log(err)
+        res.json({err: err})
+    }
+    next()
+};
+
+const deleteComment = async function(req:Request, res:Response, next:NextFunction){
+    const db = mongoose.connection;
+    try{
+        await db.transaction(async function finaliseCommentDelete(session){
+            await Comment.deleteOne({
+                _id: req.body._id
+                },
+                {session})
             .catch(
                 (err:Error)=> {throw err}
                 )
@@ -138,6 +163,20 @@ const updateComment = async function(req:Request, res:Response, next:NextFunctio
     }
     next()
 };
+
+export const deleteCommentController = [
+    _checkUserIsAuthenticated,
+    body('_id','Comment id must not be empty.')
+    .trim()
+    .notEmpty()
+    .withMessage('Comment id must not be empty.')
+    .escape(),
+    body('_id').custom(_checkValidityOfCommentId),
+    commentValidation,
+    deleteComment,
+    redirectPage,
+    confirmCommentDeleted
+]
 
 
 export const postCommentController = [
@@ -201,7 +240,5 @@ export const putCommentController = [
     confirmCommentUpdated
 ];
 
-const deleteCommentController = [
 
-];
 
