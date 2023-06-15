@@ -1,4 +1,4 @@
-import mongoose, { ObjectId } from 'mongoose';
+import mongoose from 'mongoose';
 import request, { Response } from 'supertest';
 import  Comment  from '../../models/comment';
 import Post from '../../models/post';
@@ -17,8 +17,8 @@ jest.mock('mongoose', () => {
         __esModule: true,
         default: {
             ...actualModule,
-            connection: {transaction: (create:() => Promise<void> | Error) => {
-                create()
+            connection: {transaction: (write:() => Promise<void> | Error) => {
+                write()
                 return {catch: (err:Error) => {err ? console.log(err) : false }}
             }}
         }
@@ -28,12 +28,21 @@ jest.mock('mongoose', () => {
 
 
 const mockCreate = jest.fn();
+const mockUpdateOne = jest.fn();
 Comment.create = mockCreate.mockImplementation(()=>{
     return Promise.resolve()
 });
 
+Comment.updateOne = mockUpdateOne.mockImplementation(()=>{
+    return Promise.resolve()
+});
+
+
+const mockCommentExists = jest.fn().mockImplementation(()=> Promise.resolve(true));
 const mockUserExists = jest.fn().mockImplementation(()=> Promise.resolve(true));
 const mockPostExists = jest.fn().mockImplementation(()=> Promise.resolve(true));
+
+Comment.exists = mockCommentExists;
 Post.exists = mockPostExists;
 User.exists = mockUserExists;
 
@@ -64,7 +73,7 @@ const databaseMockGenerator = function(modelMockExists: typeof mockPostExists | 
  
 
 describe('Comment creation should work if user authenticated and post id and user id are validated', () => {
-    const postId = new mongoose.Types.ObjectId()
+    const postId = new mongoose.Types.ObjectId();
     const userId = new mongoose.Types.ObjectId();
     
    
@@ -89,6 +98,7 @@ describe('Comment creation should work if user authenticated and post id and use
         })
 
     });
+
     it('Comment should not be created if content is whitespace', (done) => {
         toggleAuthTestVariable(true);
 
@@ -197,8 +207,95 @@ describe('Comment creation should work if user authenticated and post id and use
         })
 
     })
-})
+});
+
+describe('Comment update should work if user authenticated and _id is validated', () => {
+    const commentId = new mongoose.Types.ObjectId();
+    const postId = new mongoose.Types.ObjectId();
+    const userId = new mongoose.Types.ObjectId();
+    
+   
+
+    beforeEach(()=>{
+        mockUpdateOne.mockClear()
+    })
+
+    it('Comment should not be updated if user is not authenticated', (done) => {
+        toggleAuthTestVariable(false);
+
+        request(app)
+        .put('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockUpdateOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
+    
+
+    it('Comment should not be updated if _id is not in database', (done) => {
+        toggleAuthTestVariable(true);
+        databaseMockGenerator(mockCommentExists)(new mongoose.Types.ObjectId());
+
+        request(app)
+        .put('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockUpdateOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
+
+
+    it('Expect comment update to redirect to origin if referer header is supplied', (done) => {
+        const origin = 'http://127.0.0.1:3000';
+        toggleAuthTestVariable(true);
+        databaseMockGenerator(mockCommentExists)(commentId);
+
+        request(app)
+        .put('/comment')
+        .set('Referer', origin)
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(302)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockUpdateOne).toHaveBeenCalled()
+            done()
+        })
+
+    });
+    
+    it('Expect comment creation to return an object with comment created status if referer header is not present', (done) => {
+        toggleAuthTestVariable(true);
+        databaseMockGenerator(mockCommentExists)(commentId);
+
+        request(app)
+        .put('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockUpdateOne).toHaveBeenCalled()
+            expect(res.body).toHaveProperty('status', 'Comment updated successfully.')
+            done()
+        })
+
+    });
+});
 
 
 
+   
 
