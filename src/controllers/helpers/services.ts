@@ -1,3 +1,4 @@
+import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { Result, ValidationError, validationResult } from 'express-validator';
 
@@ -16,4 +17,14 @@ export const basicValidation = function(req:Request,res:Response,next:NextFuncti
 export const redirectPage = function(req:Request,res:Response,next:NextFunction){
     const referer = req.get('Referer')
     referer ? res.redirect(referer) : next()
+};
+
+export const hashPassword = async function(password: string){
+    try{
+        const result = await bcrypt.hash(password,10);
+        return result
+    }catch(error){
+        throw error
+    }
+
 };

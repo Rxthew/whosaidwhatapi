@@ -1,20 +1,11 @@
-import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
 import mongoose from 'mongoose';
 import { basicValidation, redirectPage } from './helpers/services';
+import { hashPassword } from './helpers/services';
 import { User } from '../models/user';
 
 
-const _hashPassword = async function(password: string){
-    try{
-        const result = await bcrypt.hash(password,10);
-        return result
-    }catch(error){
-        throw error
-    }
-
-};
 
 const _noDuplicateUsernames = async function(username:string){
     try {
@@ -60,7 +51,7 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
 const saveUser = async function(req:Request,res:Response,next:NextFunction){
     try{
         const db = mongoose.connection;
-        const hashed = await _hashPassword(req.body.password)
+        const hashed = await hashPassword(req.body.password)
         const user = new User({
             first_name: req.body.first_name,
             last_name: req.body.last_name,
