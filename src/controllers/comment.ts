@@ -3,8 +3,7 @@ import { body } from 'express-validator';
 import mongoose from 'mongoose';
 import  Comment  from '../models/comment';
 import Post from '../models/post';
-import { User } from '../models/user';
-import { basicValidation, redirectPage } from './helpers/services';
+import { basicValidation, checkValidityOfUserId, redirectPage, userExistsInDatabase } from './helpers/services';
 
 const Types = mongoose.Types;
 
@@ -37,15 +36,6 @@ const _checkValidityOfPostId = function(id:string | mongoose.Types.ObjectId | un
 
 };
 
-const _checkValidityOfUserId = function(id:string | mongoose.Types.ObjectId | unknown){
-    const result = mongoose.isObjectIdOrHexString(id);
-    if(!result){
-        throw new Error('User\'s object id is invalid.')
-    }
-    return result
-
-};
-
 const _generateDate = function(){  //To refine
     return Date.now(); 
 };
@@ -66,15 +56,6 @@ const _postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId
     }
     return result
 
-
-};
-
-const _userExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
-    const result = await User.exists({'_id': id}).catch((err:Error)=>{throw err});
-    if(!result){
-        throw new Error('User object id is not in database')
-    }
-    return result
 
 };
 
@@ -197,9 +178,9 @@ export const postCommentController = [
     .withMessage('User id must not be empty.')
     .escape(),
     body('post').custom(_checkValidityOfPostId),
-    body('user').custom(_checkValidityOfUserId),
+    body('user').custom(checkValidityOfUserId),
     body('post').custom(_postExistsInDatabase),
-    body('user').custom(_userExistsInDatabase),
+    body('user').custom(userExistsInDatabase),
     commentValidation,
     createComment,
     redirectPage,
@@ -230,10 +211,10 @@ export const putCommentController = [
     .escape(),
     body('_id').custom(_checkValidityOfCommentId),
     body('post').custom(_checkValidityOfPostId),
-    body('user').custom(_checkValidityOfUserId),
+    body('user').custom(checkValidityOfUserId),
     body('_id').custom(_commentExistsInDatabase),
     body('post').custom(_postExistsInDatabase),
-    body('user').custom(_userExistsInDatabase),
+    body('user').custom(userExistsInDatabase),
     commentValidation,
     updateComment,
     redirectPage,
