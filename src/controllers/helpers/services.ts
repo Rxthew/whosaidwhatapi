@@ -10,6 +10,7 @@ const _basicPostRequestFailed = function(res:Response, errors: Result<Validation
     return
 };
 
+
 export const basicValidation = function(req:Request,res:Response,next:NextFunction){
     const errors = validationResult(req)
     const checkEmpty = errors.isEmpty();
@@ -33,6 +34,18 @@ export const hashPassword = async function(password: string){
         throw error
     }
 
+};
+
+export const noDuplicateUsernames = async function(username:string){
+    try {
+        const user = await User.findOne({
+            username: username
+        });
+        return user ? Promise.reject('This username already exists. Try another one.') : Promise.resolve()
+    }
+    catch(error){
+        throw error
+    } 
 };
 
 export const redirectPage = function(req:Request,res:Response,next:NextFunction){

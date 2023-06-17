@@ -1,27 +1,13 @@
 import { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
 import mongoose from 'mongoose';
-import { basicValidation, redirectPage } from './helpers/services';
+import { basicValidation, noDuplicateUsernames, redirectPage } from './helpers/services';
 import { hashPassword } from './helpers/services';
 import { User } from '../models/user';
 
 
 
-const _noDuplicateUsernames = async function(username:string){
-    try {
-        const user = await User.findOne({
-            username: username
-        });
-        return user ? Promise.reject('This username already exists. Try another one.') : Promise.resolve()
-    }
-    catch(error){
-        throw error
-    } 
-};
-
-const signUpValidation = basicValidation;
-
-const assignMembershipCode = function(req:Request, res: Response, next:NextFunction){
+const assignMembership = function(req:Request, res: Response, next:NextFunction){
 
     const adminMember = function(){
         if(req.body.admin_code && req.body.admin_code === '4321'){
@@ -46,7 +32,9 @@ const assignMembershipCode = function(req:Request, res: Response, next:NextFunct
 
     adminMember() ?? privilegedMember() ?? regularMember()
     next()
-};
+}
+
+const signUpValidation = basicValidation;
 
 const saveUser = async function(req:Request,res:Response,next:NextFunction){
     try{
@@ -90,7 +78,7 @@ const signUpController = [
     body('username', 'username must not be empty')
     .trim()
     .escape(),
-    body('username').custom(_noDuplicateUsernames),
+    body('username').custom(noDuplicateUsernames),
     body('password','Password must not be empty')
     .trim()
     .isLength({min: 8})
@@ -109,7 +97,7 @@ const signUpController = [
     .withMessage('passcode for admin status is incorrect')
     .escape(),
     signUpValidation,
-    assignMembershipCode,
+    assignMembership,
     saveUser,
     redirectPage,
     confirmSignup
