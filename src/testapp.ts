@@ -9,6 +9,7 @@ import commentRouter from './routes/comment';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
 import signUpRouter from './routes/signup';
+import userRouter from './routes/user';
 
 
 const app = express();
@@ -47,6 +48,7 @@ export const {isAuthenticated, toggleAuthTestVariable} = authTestSetup();
 
 
 app.use('/', [isAuthenticated, indexRouter]);
+app.use('/:_id', userRouter);
 app.use('/login',loginRouter);
 app.use('/signup', signUpRouter);
 app.use('/comment',commentRouter);

@@ -18,6 +18,7 @@ import commentRouter from './routes/comment';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
 import signUpRouter from './routes/signup';
+import userRouter from './routes/user';
 
 dotenv.config();
 
@@ -78,9 +79,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/:_id', userRouter);
 app.use('/login',loginRouter);
 app.use('/signup',signUpRouter);
 app.use('/comment',commentRouter);
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
