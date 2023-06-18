@@ -12,8 +12,8 @@ jest.mock('mongoose', () => {
         default: {
             ...actualModule,
             connection: {transaction: (save:() => Promise<void> | Error) => {
-                save()
-                return {catch: (err:Error) => {err ? console.log(err) : false }}
+                return Promise.resolve(save())
+                
             }}
         }
         
