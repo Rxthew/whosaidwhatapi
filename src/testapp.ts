@@ -48,7 +48,7 @@ export const {isAuthenticated, toggleAuthTestVariable} = authTestSetup();
 
 
 app.use('/', [isAuthenticated, indexRouter]);
-app.use('/:_id', userRouter);
+app.use('/user', userRouter);
 app.use('/login',loginRouter);
 app.use('/signup', signUpRouter);
 app.use('/comment',commentRouter);

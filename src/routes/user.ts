@@ -3,6 +3,6 @@ import { putUserController } from '../controllers/user';
 
 const router = express.Router();
 
-router.put('/', putUserController);
+router.put('/:id', putUserController);
 
 export default router;
