@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { body, param } from 'express-validator';
 import mongoose from "mongoose";
 import { User } from "../models/user";
-import {  checkValidityOfUserId, hashPassword, noDuplicateUsernames, redirectPage, userExistsInDatabase } from "./helpers/services";
+import { basicValidation,  checkValidityOfUserId, hashPassword, noDuplicateUsernames, redirectPage, userExistsInDatabase } from "./helpers/services";
 
 
 const _getCurrentPassword = async function(id:mongoose.Types.ObjectId | string){ 
@@ -21,10 +21,10 @@ const _confirmPasswordInputs = function(req:Request){
 
 const checkCurrentPassword = async function(req:Request, res:Response, next:NextFunction){
     const inputsArePresent = _confirmPasswordInputs(req) ? true : next();   
-    const id = req.params._id;
+    const id = req.params['id'];
     const nominalCurrentPassword = await hashPassword(req.body.current_password);
     const realCurrentPassword = await _getCurrentPassword(id);
-    const comparisonResult = realCurrentPassword ? bcrypt.compare(nominalCurrentPassword, realCurrentPassword) : false;
+    const comparisonResult = realCurrentPassword ? await bcrypt.compare(nominalCurrentPassword, realCurrentPassword) : false;
     if(comparisonResult){
         next()
     }
@@ -113,7 +113,7 @@ const updateUser = async function(req:Request,res:Response,next:NextFunction){
         const db = mongoose.connection;
 
         await db.transaction(async function finaliseUpdateUser(session){
-            await User.updateOne({_id: req.params._id},{
+            await User.updateOne({_id: req.params['id']},{
 
                 ...req.body.update
 
@@ -130,15 +130,17 @@ const updateUser = async function(req:Request,res:Response,next:NextFunction){
 
 };
 
+const updateUserValidation = basicValidation;
+
 
 export const putUserController = [
-    param('_id', '_id must not be empty')
+    param('id', '_id must not be empty')
     .trim()
     .notEmpty()
     .withMessage('_id must not be empty.')
     .escape(),
-    param('_id').custom(checkValidityOfUserId),
-    param('_id').custom(userExistsInDatabase),
+    param('id').custom(checkValidityOfUserId),
+    param('id').custom(userExistsInDatabase),
     body('first_name')
     .optional({checkFalsy:true})
     .trim()
@@ -175,6 +177,7 @@ export const putUserController = [
     .equals('4321')
     .withMessage('passcode for admin status is incorrect')
     .escape(),
+    updateUserValidation,
     checkCurrentPassword,
     assignNewPassword,
     reassignMembership,
