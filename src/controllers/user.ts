@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from "express";
 import { body, param } from 'express-validator';
 import mongoose from "mongoose";
 import { User } from "../models/user";
-import { basicValidation,  checkValidityOfUserId, hashPassword, noDuplicateUsernames, redirectPage, userExistsInDatabase } from "./helpers/services";
+import { basicValidation,  checkValidityOfUserId, hashPassword, noDuplicateUsernames, redirectToOrigin, userExistsInDatabase } from "./helpers/services";
 
 
 const _getCurrentPassword = async function(id:mongoose.Types.ObjectId | string){ 
@@ -183,7 +183,7 @@ export const putUserController = [
     reassignMembership,
     establishUpdateBody,
     updateUser,
-    redirectPage,
+    redirectToOrigin,
     confirmUpdate
 ]
 

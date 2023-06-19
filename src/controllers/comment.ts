@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import mongoose from 'mongoose';
 import  Comment  from '../models/comment';
 import Post from '../models/post';
-import { basicValidation, checkValidityOfUserId, redirectPage, userExistsInDatabase } from './helpers/services';
+import { basicValidation, checkValidityOfUserId, redirectToOrigin, userExistsInDatabase } from './helpers/services';
 
 const Types = mongoose.Types;
 
@@ -155,7 +155,7 @@ export const deleteCommentController = [
     body('_id').custom(_checkValidityOfCommentId),
     commentValidation,
     deleteComment,
-    redirectPage,
+    redirectToOrigin,
     confirmCommentDeleted
 ]
 
@@ -183,7 +183,7 @@ export const postCommentController = [
     body('user').custom(userExistsInDatabase),
     commentValidation,
     createComment,
-    redirectPage,
+    redirectToOrigin,
     confirmCommentCreated
 ];
 
@@ -217,7 +217,7 @@ export const putCommentController = [
     body('user').custom(userExistsInDatabase),
     commentValidation,
     updateComment,
-    redirectPage,
+    redirectToOrigin,
     confirmCommentUpdated
 ];
 
