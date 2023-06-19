@@ -163,7 +163,7 @@ describe('User update with correct credentials should either redirect to origin 
         .put(`/user/${mockIdParam}`)
         .set('Accept','application/json')
         .set('Content-Type','application/x-www-form-urlencoded')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name: 'Doe', username:'some username', current_password: 'old password', new_password: 'new password', regular: true})
         .expect(302)
         .end((err,res) => {
@@ -179,7 +179,7 @@ describe('User update with correct credentials should either redirect to origin 
         .put(`/user/${mockIdParam}`)
         .set('Accept','application/json')
         .set('Content-Type','application/x-www-form-urlencoded')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name: 'Doe',  username:'some username', current_password: 'old password', new_password: 'new password', regular: true, privilege_code: '1234'})
         .expect(302)
         .end((err,res) => {
@@ -195,7 +195,7 @@ describe('User update with correct credentials should either redirect to origin 
         .put(`/user/${mockIdParam}`)
         .set('Accept','application/json')
         .set('Content-Type','application/x-www-form-urlencoded')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name: 'Doe',  username:'some username', current_password: 'old password', new_password: 'new password', regular: true, privilege_code: '1234', admin_code: '4321'})
         .expect(302)
         .end((err,res) => {

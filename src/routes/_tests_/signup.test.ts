@@ -73,7 +73,7 @@ describe("Sign up should work when saving user, but should throw error if same u
     it('Expect redirection to origin with save being called',(done) => {
         request(app)
         .post('/signup')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'John', last_name: 'Doe', username: 'johndoe', password: 'johndoe1', privilege_code: '1234', admin_code: '4321'})
         .expect(302)
         .end(async (err,res) => {
@@ -89,7 +89,7 @@ describe("Sign up should work when saving user, but should throw error if same u
     it('Expect bad request if duplicate usernames, with save not being called',(done) => {
         request(app)
         .post('/signup')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'John', last_name: 'Doe', username: 'johndoe', password: 'johndoe1', privilege_code: '1234', admin_code: '4321'})
         .expect(checkIfErrorsPresent)
         .expect(400)
@@ -110,7 +110,7 @@ describe('Sign up with correct credentials should redirect to origin', ()=>{
     it('Correct credentials for admin user.', (done) => {        
         request(app)
         .post('/signup')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234', admin_code: '4321'})
         .expect(302)
         .end(async (err,res) => {
@@ -123,7 +123,7 @@ describe('Sign up with correct credentials should redirect to origin', ()=>{
     it('Correct credentials for privileged user.', (done) => {
         request(app)
         .post('/signup')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1', privilege_code: '1234'})
         .expect(302)
         .end((err,res) => {
@@ -135,7 +135,7 @@ describe('Sign up with correct credentials should redirect to origin', ()=>{
     it('Correct credentials for regular user.', (done) => {
         request(app)
         .post('/signup')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name: 'Doe', username: 'janedoe', password: 'janedoe1'})
         .expect(302)
         .end((err,res) => {
@@ -198,7 +198,7 @@ describe('Sign up with incorrect credential should return errors.json',()=>{
         request(app)
         .post('/signup')
         .set('Accept','application/json')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name:'Doe', username: 'janedoe', password: 'janedoe1', privilege_code:'1234', admin_code:'1234'})
         .expect(checkIfErrorsPresent)
         .expect(400,done)
@@ -207,7 +207,7 @@ describe('Sign up with incorrect credential should return errors.json',()=>{
         request(app)
         .post('/signup')
         .set('Accept','application/json')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name:'Doe', username: 'janedoe', password: 'janedoe1', privilege_code:'4321', admin_code:'4321'})
         .expect(checkIfErrorsPresent)
         .expect(400,done)
@@ -216,7 +216,7 @@ describe('Sign up with incorrect credential should return errors.json',()=>{
         request(app)
         .post('/signup')
         .set('Accept','application/json')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .send({first_name: 'Jane', last_name:'Doe', username: 'janedoe'})
         .expect(checkIfErrorsPresent)
         .expect(400,done)

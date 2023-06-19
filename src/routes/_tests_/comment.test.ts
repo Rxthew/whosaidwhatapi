@@ -176,14 +176,14 @@ describe('Comment creation should work if user authenticated and post id and use
 
     })
 
-    it('Expect comment creation to redirect to origin if referer header is supplied', (done) => {
+    it('Expect comment creation to redirect to origin if origin header is supplied', (done) => {
         const origin = 'http://127.0.0.1:3000';
         toggleAuthTestVariable(true);
         databaseMockGenerator(mockPostExists)(postId);
 
         request(app)
         .post('/comment')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .set('Accept', 'application/json')
         .send({content: 'test content', post: postId, user: userId})
         .expect(302)
@@ -196,7 +196,7 @@ describe('Comment creation should work if user authenticated and post id and use
 
     })
     
-    it('Expect comment creation to return an object with comment created status if referer header is not present', (done) => {
+    it('Expect comment creation to return an object with comment created status if origin header is not present', (done) => {
         toggleAuthTestVariable(true);
         databaseMockGenerator(mockUserExists)(userId);
 
@@ -241,13 +241,13 @@ describe('Comment delete should work if user authenticated and _id is validated'
     });
     
 
-    it('Expect comment delete to redirect to origin if referer header is supplied', (done) => {
+    it('Expect comment delete to redirect to origin if Origin header is supplied', (done) => {
         const origin = 'http://127.0.0.1:3000';
         toggleAuthTestVariable(true);
 
         request(app)
         .delete('/comment')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .set('Accept', 'application/json')
         .send({ _id: commentId})
         .expect(302)
@@ -259,7 +259,7 @@ describe('Comment delete should work if user authenticated and _id is validated'
 
     });
     
-    it('Expect comment creation to return an object with comment created status if referer header is not present', (done) => {
+    it('Expect comment creation to return an object with comment created status if origin header is not present', (done) => {
         toggleAuthTestVariable(true);
 
         request(app)
@@ -328,14 +328,14 @@ describe('Comment update should work if user authenticated and _id is validated'
     });
 
 
-    it('Expect comment update to redirect to origin if referer header is supplied', (done) => {
+    it('Expect comment update to redirect to origin if origin header is supplied', (done) => {
         const origin = 'http://127.0.0.1:3000';
         toggleAuthTestVariable(true);
         databaseMockGenerator(mockCommentExists)(commentId);
 
         request(app)
         .put('/comment')
-        .set('Referer', origin)
+        .set('Origin', origin)
         .set('Accept', 'application/json')
         .send({content: 'test content', _id: commentId, post: postId, user: userId})
         .expect(302)
@@ -347,7 +347,7 @@ describe('Comment update should work if user authenticated and _id is validated'
 
     });
     
-    it('Expect comment creation to return an object with comment created status if referer header is not present', (done) => {
+    it('Expect comment creation to return an object with comment created status if origin header is not present', (done) => {
         toggleAuthTestVariable(true);
         databaseMockGenerator(mockCommentExists)(commentId);
 
