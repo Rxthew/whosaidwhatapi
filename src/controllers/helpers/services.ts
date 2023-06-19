@@ -48,11 +48,15 @@ export const noDuplicateUsernames = async function(username:string){
     } 
 };
 
-export const redirectPage = function(req:Request,res:Response,next:NextFunction){
+export const redirectToReferringPage = function(req:Request,res:Response,next:NextFunction){
     const referer = req.get('Referer')
-    referer ? res.redirect(referer) : next()
+    referer ? res.redirect(referer) : next();
 };
 
+export const redirectToOrigin = function(req:Request,res:Response, next:NextFunction){
+    const origin = req.get('Origin');
+    origin ? res.redirect(origin) : next();
+};
 
 export const userExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await User.exists({'_id': id}).catch((err:Error)=>{throw err});
