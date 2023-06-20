@@ -17,6 +17,7 @@ import { User } from './models/user';
 import commentRouter from './routes/comment';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
+import logoutRouter from './routes/logout';
 import signUpRouter from './routes/signup';
 import userRouter from './routes/user';
 
@@ -81,6 +82,7 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 app.use('/user', userRouter);
 app.use('/login',loginRouter);
+app.use('/logout',logoutRouter);
 app.use('/signup',signUpRouter);
 app.use('/comment',commentRouter);
 
