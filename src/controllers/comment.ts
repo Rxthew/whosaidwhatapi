@@ -8,15 +8,6 @@ import { basicValidation, checkValidityOfUserId, redirectToOrigin, userExistsInD
 const Types = mongoose.Types;
 
 
-const _checkUserIsAuthenticated = function(req:Request, res:Response, next:NextFunction){
-    if(req.isAuthenticated()){
-        next()
-    }
-    else{
-        res.status(400).json({'errors': {msg: 'User is not authenticated'}})
-
-    }  
-};
 
 const _checkValidityOfCommentId = function(id:string | mongoose.Types.ObjectId | unknown){
     const result = mongoose.isObjectIdOrHexString(id);
@@ -56,6 +47,27 @@ const _postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId
     }
     return result
 
+};
+
+const checkUserIsAuthenticated = function(req:Request, res:Response, next:NextFunction){
+    if(req.isAuthenticated()){
+        next()
+    }
+    else{
+        res.status(400).json({'errors': {msg: 'User is not authenticated'}})
+
+    }  
+};
+
+const checkUserIsPrivileged = function(req:Request, res:Response, next:NextFunction){
+     const user = req.user;
+     const memberStatus = req.user?.member_status;
+     if(memberStatus === 'privileged' || memberStatus === 'admin'){
+        next()
+     }
+     else{
+        res.status(400).json({'errors': {msg: 'User member status does not have the necessary privilege for this request'}})
+     }
 
 };
 
@@ -146,7 +158,8 @@ const updateComment = async function(req:Request, res:Response, next:NextFunctio
 };
 
 export const deleteCommentController = [
-    _checkUserIsAuthenticated,
+    checkUserIsAuthenticated,
+    checkUserIsPrivileged,
     body('_id','Comment id must not be empty.')
     .trim()
     .notEmpty()
@@ -161,7 +174,8 @@ export const deleteCommentController = [
 
 
 export const postCommentController = [
-    _checkUserIsAuthenticated,
+    checkUserIsAuthenticated,
+    checkUserIsPrivileged,
     body('content','Content must not be empty.')
     .trim()
     .notEmpty()
@@ -188,7 +202,8 @@ export const postCommentController = [
 ];
 
 export const putCommentController = [
-    _checkUserIsAuthenticated,
+    checkUserIsAuthenticated,
+    checkUserIsPrivileged,
     body('content','Content must not be empty.')
     .trim()
     .notEmpty()
