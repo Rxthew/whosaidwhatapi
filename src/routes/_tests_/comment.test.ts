@@ -105,6 +105,23 @@ describe('Comment creation should work if user authenticated and post id and use
 
     });
 
+    it('Comment should not be created if user member status is only regular (privileged or admin, a must)', (done) =>{
+        toggleAuthTestVariable(true,'regular');
+
+        request(app)
+        .post('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', post: postId, user: userId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockCreate).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
+
     it('Comment should not be created if content is whitespace', (done) => {
         toggleAuthTestVariable(true);
 
@@ -239,6 +256,23 @@ describe('Comment delete should work if user authenticated and _id is validated'
         })
 
     });
+
+    it('Comment should not be deleted if user member status is only regular (privileged or admin, a must)', (done) =>{
+        toggleAuthTestVariable(true,'regular');
+
+        request(app)
+        .delete('/comment')
+        .set('Accept', 'application/json')
+        .send({ _id: commentId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockDeleteOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
     
 
     it('Expect comment delete to redirect to origin if Origin header is supplied', (done) => {
@@ -259,7 +293,7 @@ describe('Comment delete should work if user authenticated and _id is validated'
 
     });
     
-    it('Expect comment creation to return an object with comment created status if origin header is not present', (done) => {
+    it('Expect comment deletion to return an object with comment deleted status if origin header is not present', (done) => {
         toggleAuthTestVariable(true);
 
         request(app)
@@ -293,6 +327,23 @@ describe('Comment update should work if user authenticated and _id is validated'
 
     it('Comment should not be updated if user is not authenticated', (done) => {
         toggleAuthTestVariable(false);
+
+        request(app)
+        .put('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockUpdateOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
+
+    it('Comment should not be deleted if user member status is only regular (privileged or admin, a must)', (done) =>{
+        toggleAuthTestVariable(true,'regular');
 
         request(app)
         .put('/comment')
@@ -347,7 +398,7 @@ describe('Comment update should work if user authenticated and _id is validated'
 
     });
     
-    it('Expect comment creation to return an object with comment created status if origin header is not present', (done) => {
+    it('Expect comment update to return an object with comment updated status if origin header is not present', (done) => {
         toggleAuthTestVariable(true);
         databaseMockGenerator(mockCommentExists)(commentId);
 

@@ -39,7 +39,7 @@ describe('index call should return user and visible users for comments where aut
         .end(async (err,res) => {
             if(err){return await done(err)}
             expect(res.body).toHaveProperty('user.username', 'Jane Doe')
-            expect(res.body).toHaveProperty('user.member_status', 'regular')
+            expect(res.body).toHaveProperty('user.member_status', 'privileged')
             expect(res.body).toHaveProperty('user._id', '200')
             await done()
         })

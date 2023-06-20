@@ -21,18 +21,17 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 const authTestSetup = function(){
-  const _authTestVariable = {authenticated: true};
+  const _authTestVariable = {authenticated: true, member_status: 'privileged'};
   
-  const toggleAuthTestVariable = function(authenticate:boolean){
-      const newStatus = authenticate ? _authTestVariable.authenticated = true : _authTestVariable.authenticated = false;
-      return _authTestVariable.authenticated
+  const toggleAuthTestVariable = function(authenticate:boolean=true, new_member_status: 'regular' | 'privileged' | 'admin'='privileged'){
+      Object.assign(_authTestVariable, {authenticated: authenticate, member_status: new_member_status})
+      return _authTestVariable
   };
-
 
   const isAuthenticated = function(req:Request, res:Response, next:NextFunction){
       const isAuth = function(){return _authTestVariable.authenticated};
       Object.assign(req, {isAuthenticated: isAuth});
-      Object.assign(req, { user: {username: 'Jane Doe', member_status: 'regular', _id: '200'} })
+      Object.assign(req, { user: {username: 'Jane Doe', member_status: _authTestVariable.member_status, _id: '200'} })
       next();
   };
 
