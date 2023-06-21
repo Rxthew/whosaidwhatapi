@@ -71,6 +71,20 @@ const checkUserIsPrivileged = function(req:Request, res:Response, next:NextFunct
 
 };
 
+const checkCommentOwnership = async function(req:Request, res:Response, next:NextFunction){
+    const userId = req.user?._id 
+    const commentId = req.body._id;
+    const comment = await Comment.findById({_id: commentId}).catch((error:Error)=>{throw error})
+    if(comment?.user.toString() !== userId?.toString()){
+        res.status(400).json({'errors': {msg: 'User is not the owner of this comment so this operation is not allowed'}})
+        return   
+    }
+    next()
+   
+    
+
+}
+
 
 const commentValidation = basicValidation;
 
@@ -167,6 +181,7 @@ export const deleteCommentController = [
     .escape(),
     body('_id').custom(_checkValidityOfCommentId),
     commentValidation,
+    checkCommentOwnership,
     deleteComment,
     redirectToOrigin,
     confirmCommentDeleted
@@ -231,6 +246,7 @@ export const putCommentController = [
     body('post').custom(_postExistsInDatabase),
     body('user').custom(userExistsInDatabase),
     commentValidation,
+    checkCommentOwnership,
     updateComment,
     redirectToOrigin,
     confirmCommentUpdated

@@ -44,10 +44,12 @@ Comment.updateOne = mockUpdateOne.mockImplementation(()=>{
 
 
 const mockCommentExists = jest.fn().mockImplementation(()=> Promise.resolve(true));
+const mockFindById = jest.fn().mockImplementation(()=>{return Promise.resolve({user: '200'})});
 const mockUserExists = jest.fn().mockImplementation(()=> Promise.resolve(true));
 const mockPostExists = jest.fn().mockImplementation(()=> Promise.resolve(true));
 
 Comment.exists = mockCommentExists;
+Comment.findById = mockFindById;
 Post.exists = mockPostExists;
 User.exists = mockUserExists;
 
@@ -273,6 +275,24 @@ describe('Comment delete should work if user authenticated and _id is validated'
         })
 
     });
+
+    it('Comment should not be deleted if user is not the owner of the comment.', (done) =>{
+        toggleAuthTestVariable(true);
+        mockFindById.mockImplementationOnce(()=>{ return Promise.resolve({user: '100'})})
+
+        request(app)
+        .delete('/comment')
+        .set('Accept', 'application/json')
+        .send({ _id: commentId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockDeleteOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
     
 
     it('Expect comment delete to redirect to origin if Origin header is supplied', (done) => {
@@ -342,7 +362,7 @@ describe('Comment update should work if user authenticated and _id is validated'
 
     });
 
-    it('Comment should not be deleted if user member status is only regular (privileged or admin, a must)', (done) =>{
+    it('Comment should not be updated if user member status is only regular (privileged or admin, a must)', (done) =>{
         toggleAuthTestVariable(true,'regular');
 
         request(app)
@@ -366,6 +386,24 @@ describe('Comment update should work if user authenticated and _id is validated'
 
         request(app)
         .put('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(checkIfErrorsPresent)
+        .expect(400)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockUpdateOne).not.toHaveBeenCalled()
+            done()
+        })
+
+    });
+
+    it('Comment should not be updated if user is not the owner of the comment.', (done) =>{
+        toggleAuthTestVariable(true);
+        mockFindById.mockImplementationOnce(()=>{return Promise.resolve({user: '100'})})
+
+        request(app)
+        .delete('/comment')
         .set('Accept', 'application/json')
         .send({content: 'test content', _id: commentId, post: postId, user: userId})
         .expect(checkIfErrorsPresent)
