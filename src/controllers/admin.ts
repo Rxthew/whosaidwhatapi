@@ -1,7 +1,6 @@
 
 import { Request, Response, NextFunction } from "express";
 import Post from "../models/post";
-import { User } from "../models/user";
 import { checkUserIsAuthenticated, getUser, returnIndexData } from "./helpers/services";
 
 
@@ -51,11 +50,13 @@ const checkUserIsAdmin = async function(req:Request, res:Response, next:NextFunc
 
 };
 
-export const adminController = [
+const adminController = [
     checkUserIsAuthenticated,
     checkUserIsAdmin,
     getDetailedPosts,
     getUser,
     returnIndexData
 ]
+
+export default adminController
 
