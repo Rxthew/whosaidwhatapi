@@ -89,10 +89,8 @@ const checkCommentOwnership = async function(req:Request, res:Response, next:Nex
         return   
     }
     next()
-   
-    
 
-}
+};
 
 
 const commentValidation = basicValidation;

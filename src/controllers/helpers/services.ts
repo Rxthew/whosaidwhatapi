@@ -14,7 +14,11 @@ const _basicPostRequestFailed = function(res:Response, errors: Result<Validation
 export const basicValidation = function(req:Request,res:Response,next:NextFunction){
     const errors = validationResult(req)
     const checkEmpty = errors.isEmpty();
-    checkEmpty ? next() : _basicPostRequestFailed(res,errors)
+    if(checkEmpty){
+        next()
+        return
+    }
+    _basicPostRequestFailed(res,errors)
 };
 
 export const checkValidityOfUserId = function(id:string | mongoose.Types.ObjectId | unknown){
@@ -50,12 +54,21 @@ export const noDuplicateUsernames = async function(username:string){
 
 export const redirectToReferringPage = function(req:Request,res:Response,next:NextFunction){
     const referer = req.get('Referer')
-    referer ? res.redirect(referer) : next();
+    if(referer){
+        res.redirect(referer);
+        return
+    }
+    next();
 };
 
 export const redirectToOrigin = function(req:Request,res:Response, next:NextFunction){
     const origin = req.get('Origin');
-    origin ? res.redirect(origin) : next();
+    if(origin){
+        res.redirect(origin)
+        return
+    }
+    next()
+    
 };
 
 export const userExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
