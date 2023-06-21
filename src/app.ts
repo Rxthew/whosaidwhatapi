@@ -15,6 +15,7 @@ import passport from 'passport';
 import { Strategy as LocalStrategy }  from 'passport-local';
 import { User } from './models/user';
 import commentRouter from './routes/comment';
+import adminRouter from './routes/admin';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
 import logoutRouter from './routes/logout';
@@ -80,6 +81,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use('/', indexRouter);
+app.use('/admin', adminRouter);
 app.use('/user', userRouter);
 app.use('/login',loginRouter);
 app.use('/logout',logoutRouter);

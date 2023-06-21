@@ -5,6 +5,7 @@ import createError from 'http-errors';
 import { HttpError } from 'http-errors';
 import methodOverride from 'method-override';
 import logger from 'morgan';
+import adminRouter from './routes/admin';
 import commentRouter from './routes/comment';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
@@ -47,6 +48,7 @@ export const {isAuthenticated, toggleAuthTestVariable} = authTestSetup();
 
 
 app.use('/', [isAuthenticated, indexRouter]);
+app.use('/admin', adminRouter);
 app.use('/user', userRouter);
 app.use('/login',loginRouter);
 app.use('/signup', signUpRouter);
