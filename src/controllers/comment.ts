@@ -3,7 +3,7 @@ import { body } from 'express-validator';
 import mongoose from 'mongoose';
 import  Comment  from '../models/comment';
 import Post from '../models/post';
-import { basicValidation, checkValidityOfUserId, redirectToOrigin, userExistsInDatabase } from './helpers/services';
+import { basicValidation, checkValidityOfUserId, checkUserIsAuthenticated, redirectToOrigin, userExistsInDatabase } from './helpers/services';
 
 const Types = mongoose.Types;
 
@@ -52,16 +52,6 @@ const _postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId
 const _userIsAdmin = function(status:string | undefined){
     return status === 'admin'
 
-};
-
-const checkUserIsAuthenticated = function(req:Request, res:Response, next:NextFunction){
-    if(req.isAuthenticated()){
-        next()
-    }
-    else{
-        res.status(400).json({'errors': {msg: 'User is not authenticated'}})
-
-    }  
 };
 
 const checkUserIsPrivileged = function(req:Request, res:Response, next:NextFunction){

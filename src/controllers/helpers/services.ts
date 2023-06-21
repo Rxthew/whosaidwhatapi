@@ -30,6 +30,29 @@ export const checkValidityOfUserId = function(id:string | mongoose.Types.ObjectI
 
 };
 
+export const checkUserIsAuthenticated = function(req:Request, res:Response, next:NextFunction){
+    if(req.isAuthenticated()){
+        next()
+    }
+    else{
+        res.status(400).json({'errors': {msg: 'User is not authenticated'}})
+
+    }  
+};
+
+export const getUser = async function(req:Request, res:Response, next:NextFunction){
+    if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
+        const user = req.isAuthenticated() ? req.user : false;
+        if(user){
+            Object.assign(req.body,{user: {username: user.username, member_status: user.member_status, _id: user._id}})
+        }
+        next()
+    }
+    else{
+        res.json({err: {msg: 'Could not authenticate user.'}})
+    }
+};
+
 export const hashPassword = async function(password: string){
     try{
         const result = await bcrypt.hash(password,10);
@@ -69,6 +92,12 @@ export const redirectToOrigin = function(req:Request,res:Response, next:NextFunc
     }
     next()
     
+};
+
+export const returnIndexData = function(req:Request, res:Response, next:NextFunction){
+    const responseBody = {posts: req.body.posts};
+    req.body.user ? Object.assign(responseBody, {user: req.body.user}) : false;
+    res.json(responseBody);
 };
 
 export const userExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){

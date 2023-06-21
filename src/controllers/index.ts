@@ -2,6 +2,7 @@
 import { Request, Response, NextFunction } from "express";
 import Post from "../models/post";
 import { User } from "../models/user";
+import { getUser, returnIndexData } from "./helpers/services";
 
 type UserType = InstanceType<typeof User>;
 declare global {
@@ -95,24 +96,6 @@ const getAllPosts = async function(req:Request, res:Response, next:NextFunction)
     
 };
 
-const getUser = async function(req:Request, res:Response, next:NextFunction){
-    if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
-        const user = req.isAuthenticated() ? req.user : false;
-        if(user){
-            Object.assign(req.body,{user: {username: user.username, member_status: user.member_status, _id: user._id}})
-        }
-        next()
-    }
-    else{
-        res.json({err: {msg: 'Could not authenticate user.'}})
-    }
-};
-
-const returnIndexData = function(req:Request, res:Response, next:NextFunction){
-    const responseBody = {posts: req.body.posts};
-    req.body.user ? Object.assign(responseBody, {user: req.body.user}) : false;
-    res.json(responseBody);
-};
 
 const indexController = [
     getUser,
