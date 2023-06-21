@@ -239,7 +239,8 @@ describe('Comment delete should work if user authenticated and _id is validated'
     const commentId = new mongoose.Types.ObjectId();
   
     beforeEach(()=>{
-        mockDeleteOne.mockClear()
+        mockDeleteOne.mockClear();
+        mockFindById.mockClear();
     })
 
     it('Comment should not be deleted if user is not authenticated', (done) => {
@@ -293,8 +294,8 @@ describe('Comment delete should work if user authenticated and _id is validated'
         })
 
     });
-    
 
+    
     it('Expect comment delete to redirect to origin if Origin header is supplied', (done) => {
         const origin = 'http://127.0.0.1:3000';
         toggleAuthTestVariable(true);
@@ -329,6 +330,27 @@ describe('Comment delete should work if user authenticated and _id is validated'
         })
 
     });
+
+    it('Comment ownership validation should not apply if user is admin.', (done) =>{
+        toggleAuthTestVariable(true, 'admin');
+        mockFindById.mockImplementationOnce(()=>{ return Promise.resolve({user: '100'})})
+
+
+        request(app)
+        .delete('/comment')
+        .set('Accept', 'application/json')
+        .send({ _id: commentId})
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockFindById).not.toHaveBeenCalled()
+            expect(mockDeleteOne).toHaveBeenCalled()
+            await done()
+            mockFindById()
+        })
+        
+
+    });
 });
 
 
@@ -342,7 +364,8 @@ describe('Comment update should work if user authenticated and _id is validated'
    
 
     beforeEach(()=>{
-        mockUpdateOne.mockClear()
+        mockUpdateOne.mockClear();
+        mockFindById.mockClear();
     })
 
     it('Comment should not be updated if user is not authenticated', (done) => {
@@ -403,9 +426,9 @@ describe('Comment update should work if user authenticated and _id is validated'
         mockFindById.mockImplementationOnce(()=>{return Promise.resolve({user: '100'})})
 
         request(app)
-        .delete('/comment')
+        .put('/comment')
         .set('Accept', 'application/json')
-        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .send({content: 'tested content', _id: commentId, post: postId, user: userId})
         .expect(checkIfErrorsPresent)
         .expect(400)
         .end(async (err,res) => {
@@ -413,6 +436,7 @@ describe('Comment update should work if user authenticated and _id is validated'
             expect(mockUpdateOne).not.toHaveBeenCalled()
             done()
         })
+        
 
     });
 
@@ -451,6 +475,29 @@ describe('Comment update should work if user authenticated and _id is validated'
             expect(res.body).toHaveProperty('status', 'Comment updated successfully.')
             done()
         })
+
+    });
+
+    it('Comment ownership validation should not apply if user is admin.', (done) =>{
+        toggleAuthTestVariable(true, 'admin');
+        mockFindById.mockImplementationOnce(()=>{ return Promise.resolve({user: '100'})})
+
+        request(app)
+        .put('/comment')
+        .set('Accept', 'application/json')
+        .send({content: 'test content', _id: commentId, post: postId, user: userId})
+        .expect(200)
+        .end(async (err,res) => {
+            if(err){return done(err)}
+            expect(mockFindById).not.toHaveBeenCalled()
+            expect(mockDeleteOne).toHaveBeenCalled()
+            await done()
+             mockFindById()
+        })
+
+       
+
+        
 
     });
 });

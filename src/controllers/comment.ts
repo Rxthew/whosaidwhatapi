@@ -49,6 +49,11 @@ const _postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId
 
 };
 
+const _userIsAdmin = function(status:string | undefined){
+    return status === 'admin'
+
+};
+
 const checkUserIsAuthenticated = function(req:Request, res:Response, next:NextFunction){
     if(req.isAuthenticated()){
         next()
@@ -72,6 +77,10 @@ const checkUserIsPrivileged = function(req:Request, res:Response, next:NextFunct
 };
 
 const checkCommentOwnership = async function(req:Request, res:Response, next:NextFunction){
+    if(_userIsAdmin(req.user?.member_status)){
+        next();
+        return
+    }
     const userId = req.user?._id 
     const commentId = req.body._id;
     const comment = await Comment.findById({_id: commentId}).catch((error:Error)=>{throw error})
