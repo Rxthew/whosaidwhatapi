@@ -52,9 +52,35 @@ const assignNewPassword = async function(req:Request, res:Response, next:NextFun
 
 };
 
+const confirmDelete = function(req:Request, res:Response, next: NextFunction){
+    res.json({status: 'User deleted successfully.' })
+};
+
 
 const confirmUpdate = function(req:Request, res:Response, next: NextFunction){
     res.json({status: 'User updated successfully.' })
+};
+
+const deleteUser = async function(req:Request,res:Response,next:NextFunction){
+    try{
+        const db = mongoose.connection;
+
+        await db.transaction(async function finaliseDeleteUser(session){
+            await User.deleteOne({
+                _id: req.params['id']
+            },
+            {session}
+            )
+            .catch((err:Error)=> {throw err});
+        })
+        .catch((err:Error)=> {throw err})
+        
+    } catch(err){
+        console.log(err)
+        res.json({err: err})
+    }
+    next()
+
 };
 
 const establishUpdateBody = function(req:Request ,res:Response, next:NextFunction){
@@ -138,7 +164,23 @@ const updateUser = async function(req:Request,res:Response,next:NextFunction){
 
 };
 
+const deleteUserValidation = basicValidation;
 const updateUserValidation = basicValidation;
+
+export const deleteUserController = [
+    param('id', '_id must not be empty')
+    .trim()
+    .notEmpty()
+    .withMessage('_id must not be empty.')
+    .escape(),
+    param('id').custom(checkValidityOfUserId),
+    deleteUserValidation,
+    deleteUser,
+    redirectToOrigin,
+    confirmDelete
+
+
+];
 
 
 export const putUserController = [

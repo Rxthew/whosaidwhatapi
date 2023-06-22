@@ -1,8 +1,9 @@
 import express from 'express';
-import { putUserController } from '../controllers/user';
+import { deleteUserController, putUserController } from '../controllers/user';
 
 const router = express.Router();
 
 router.put('/:id', putUserController);
+router.delete('/:id',deleteUserController);
 
 export default router;
