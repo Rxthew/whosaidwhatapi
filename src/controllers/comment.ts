@@ -3,7 +3,8 @@ import { body } from 'express-validator';
 import mongoose from 'mongoose';
 import  Comment  from '../models/comment';
 import Post from '../models/post';
-import { basicValidation, checkValidityOfUserId, checkUserIsAuthenticated, redirectToOrigin, userExistsInDatabase } from './helpers/services';
+import { basicValidation, checkValidityOfPostId, checkValidityOfUserId, checkUserIsAuthenticated, 
+    generateDate, redirectToOrigin, postExistsInDatabase, userExistsInDatabase } from './helpers/services';
 
 const Types = mongoose.Types;
 
@@ -18,20 +19,6 @@ const _checkValidityOfCommentId = function(id:string | mongoose.Types.ObjectId |
 
 };
 
-const _checkValidityOfPostId = function(id:string | mongoose.Types.ObjectId | unknown){
-    const result = mongoose.isObjectIdOrHexString(id);
-    if(!result){
-        throw new Error('Post\'s object id is invalid.')
-    }
-    return result    
-
-};
-
-const _generateDate = function(){  //To refine
-    return Date.now(); 
-};
-
-
 const _commentExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await Comment.exists({'_id': id}).catch((err:Error)=>{throw err});
     if(!result){
@@ -40,14 +27,7 @@ const _commentExistsInDatabase = async function(id:string | mongoose.Types.Objec
     return result
 };
 
-const _postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
-    const result = await Post.exists({'_id': id}).catch((err:Error)=>{throw err});
-    if(!result){
-        throw new Error('Post object id is not in database')
-    }
-    return result
 
-};
 
 const _userIsAdmin = function(status:string | undefined){
     return status === 'admin'
@@ -105,7 +85,7 @@ const createComment = async function(req:Request, res:Response, next:NextFunctio
                 content: req.body.content,
                 post: new Types.ObjectId(req.body.post.trim()), 
                 user: new Types.ObjectId(req.body.user.trim()), 
-                date: _generateDate()}], {session})
+                date: generateDate()}], {session})
             .catch(
                 (err:Error)=> {throw err}
                 )
@@ -153,7 +133,7 @@ const updateComment = async function(req:Request, res:Response, next:NextFunctio
                 content: req.body.content,
                 post: new Types.ObjectId(req.body.post.trim()), 
                 user: new Types.ObjectId(req.body.user.trim()), 
-                date: _generateDate()}], {session})
+                date: generateDate()}], {session})
             .catch(
                 (err:Error)=> {throw err}
                 )
@@ -203,9 +183,9 @@ export const postCommentController = [
     .notEmpty()
     .withMessage('User id must not be empty.')
     .escape(),
-    body('post').custom(_checkValidityOfPostId),
+    body('post').custom(checkValidityOfPostId),
     body('user').custom(checkValidityOfUserId),
-    body('post').custom(_postExistsInDatabase),
+    body('post').custom(postExistsInDatabase),
     body('user').custom(userExistsInDatabase),
     commentValidation,
     createComment,
@@ -237,10 +217,10 @@ export const putCommentController = [
     .withMessage('User id must not be empty.')
     .escape(),
     body('_id').custom(_checkValidityOfCommentId),
-    body('post').custom(_checkValidityOfPostId),
+    body('post').custom(checkValidityOfPostId),
     body('user').custom(checkValidityOfUserId),
     body('_id').custom(_commentExistsInDatabase),
-    body('post').custom(_postExistsInDatabase),
+    body('post').custom(postExistsInDatabase),
     body('user').custom(userExistsInDatabase),
     commentValidation,
     checkCommentOwnership,

@@ -2,6 +2,7 @@ import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { Result, ValidationError, validationResult } from 'express-validator';
 import mongoose from 'mongoose';
+import Post from '../../models/post';
 import { User } from '../../models/user';
 
 const _basicPostRequestFailed = function(res:Response, errors: Result<ValidationError>){
@@ -19,6 +20,15 @@ export const basicValidation = function(req:Request,res:Response,next:NextFuncti
         return
     }
     _basicPostRequestFailed(res,errors)
+};
+
+export const checkValidityOfPostId = function(id:string | mongoose.Types.ObjectId | unknown){
+    const result = mongoose.isObjectIdOrHexString(id);
+    if(!result){
+        throw new Error('Post\'s object id is invalid.')
+    }
+    return result    
+
 };
 
 export const checkValidityOfUserId = function(id:string | mongoose.Types.ObjectId | unknown){
@@ -53,6 +63,10 @@ export const getUser = async function(req:Request, res:Response, next:NextFuncti
     }
 };
 
+export const generateDate = function(){  //To refine
+    return Date.now(); 
+};
+
 export const hashPassword = async function(password: string){
     try{
         const result = await bcrypt.hash(password,10);
@@ -74,6 +88,15 @@ export const noDuplicateUsernames = async function(username:string){
         throw error
     } 
 };
+
+export const postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
+    const result = await Post.exists({'_id': id}).catch((err:Error)=>{throw err});
+    if(!result){
+        throw new Error('Post object id is not in database')
+    }
+    return result
+
+}
 
 export const redirectToReferringPage = function(req:Request,res:Response,next:NextFunction){
     const referer = req.get('Referer')
