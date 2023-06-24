@@ -2,8 +2,43 @@ import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from "express";
 import { body, param } from 'express-validator';
 import mongoose from "mongoose";
+import Comment from '../models/comment';
+import Post from '../models/post';
 import { User } from "../models/user";
 import { basicValidation,  checkValidityOfUserId, hashPassword, noDuplicateUsernames, redirectToOrigin, userExistsInDatabase } from "./helpers/services";
+
+
+const _cascadeDeletePosts = async function(userId: mongoose.ObjectId | string, session: mongoose.mongo.ClientSession){
+
+    const _retrieveUserPosts = async function(){
+        const posts = await Post.find({user: userId}, {session}).catch((err:Error)=>{throw err});
+        return posts
+    };
+
+    const _convertUserPostsToIds = function(posts: InstanceType<typeof Post>[]){
+        const postsIds = posts.map((post)=> post._id)
+        return postsIds
+    };
+
+    const _deleteAllCommentsFromAllPosts = async function(postsIds: mongoose.Types.ObjectId[]){
+        return postsIds.map(async (postId)=> await Comment.deleteMany({post: postId}, {session}).catch((err:Error)=> {throw err}))
+
+    };
+
+    const _deleteAllUserPosts = async function(){
+        await Post.deleteMany({user: userId}, {session}).catch((err:Error)=> {throw err});
+    };
+    
+    const posts = await _retrieveUserPosts();
+    const postsIds = _convertUserPostsToIds(posts);
+    const postIdsStatus = postsIds && postsIds.length > 0 ? await _deleteAllCommentsFromAllPosts(postsIds) : false;
+    postIdsStatus ? await _deleteAllUserPosts() : false;
+
+};
+
+const _cascadeDeleteUserComments = async function(userId: mongoose.ObjectId | string, session: mongoose.mongo.ClientSession){
+    await Comment.deleteMany({user: userId}, {session}).catch((err:Error)=> {throw err})
+};
 
 
 const _getCurrentPassword = async function(id:mongoose.Types.ObjectId | string){ 
@@ -61,13 +96,18 @@ const confirmUpdate = function(req:Request, res:Response, next: NextFunction){
     res.json({status: 'User updated successfully.' })
 };
 
+
 const deleteUser = async function(req:Request,res:Response,next:NextFunction){
     try{
         const db = mongoose.connection;
 
         await db.transaction(async function finaliseDeleteUser(session){
+            const userId = req.params['id'];
+            const isAdmin = req.query['admin'];
+            isAdmin ? await _cascadeDeletePosts(userId,session) : false;
+            await _cascadeDeleteUserComments(userId, session);
             await User.deleteOne({
-                _id: req.params['id']
+                _id: userId
             },
             {session}
             )
