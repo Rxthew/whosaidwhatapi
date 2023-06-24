@@ -3,7 +3,9 @@ import mongoose, { connection } from 'mongoose';
 import request from 'supertest';
 import { Response } from 'supertest'
 import app from '../../testapp';
-import {User} from '../../models/user'
+import Comment from '../../models/comment';
+import Post from '../../models/post';
+import {User} from '../../models/user';
 
 
 jest.mock('mongoose', () => {
@@ -20,6 +22,8 @@ jest.mock('mongoose', () => {
     }
 });
 jest.mock('bcryptjs');
+jest.mock('../../models/comment');
+jest.mock('../../models/post');
 jest.mock('../../models/user');
 
 const generateMocks = function(){
@@ -27,6 +31,12 @@ const generateMocks = function(){
         return Promise.resolve(true)
     })
     const mockDeleteOne = jest.fn().mockImplementation(()=>{
+        return Promise.resolve(true)
+    })
+    const mockDeleteMany = jest.fn().mockImplementation(()=>{
+        return Promise.resolve(true)
+    })
+    const mockFind = jest.fn().mockImplementation(()=>{
         return Promise.resolve(true)
     })
     const mockFindById = jest.fn().mockImplementation(() =>{
@@ -45,6 +55,8 @@ const generateMocks = function(){
     return {
         mockCompare,
         mockDeleteOne,
+        mockDeleteMany,
+        mockFind,
         mockFindById,
         mockFindOne,
         mockHash,
@@ -72,11 +84,14 @@ const addOns = function(){
 
 };
 
-const {mockCompare, mockDeleteOne, mockFindById, mockFindOne, mockHash, mockUpdateOne, mockUserExists,} = generateMocks();
+const {mockCompare, mockDeleteOne, mockDeleteMany, mockFind, mockFindById, mockFindOne, mockHash, mockUpdateOne, mockUserExists,} = generateMocks();
 const { checkIfErrorsPresent, mockIdParam, origin} = addOns()
 
 bcrypt.compare = mockCompare;
 bcrypt.hash = mockHash;
+Comment.deleteMany = mockDeleteMany;
+Post.deleteMany = mockDeleteMany;
+Post.find = mockFind;
 User.deleteOne = mockDeleteOne;
 User.exists = mockUserExists;
 User.findById = mockFindById;
