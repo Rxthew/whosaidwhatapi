@@ -19,7 +19,7 @@ UserSchema.virtual('comments',{
     foreignField: 'user'
 } )
 
-UserSchema.virtual('comments',{
+UserSchema.virtual('posts',{
     ref: 'Post',
     localField: '_id',
     foreignField: 'user'

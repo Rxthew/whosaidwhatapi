@@ -104,8 +104,13 @@ const deleteUser = async function(req:Request,res:Response,next:NextFunction){
         await db.transaction(async function finaliseDeleteUser(session){
             const userId = req.params['id'];
             const memberStatus = req.user?.member_status;
-            memberStatus === 'admin' ? await _cascadeDeletePosts(userId,session) : false;
-            await _cascadeDeleteUserComments(userId, session);
+
+            memberStatus === 'admin' ? await _cascadeDeletePosts(userId,session)
+            .catch((err:Error)=> {throw err}): false;
+            
+            await _cascadeDeleteUserComments(userId, session)
+            .catch((err:Error)=> {throw err});
+
             await User.deleteOne({
                 _id: userId
             },
