@@ -19,6 +19,7 @@ import adminRouter from './routes/admin';
 import indexRouter from './routes/index';
 import loginRouter from './routes/login';
 import logoutRouter from './routes/logout';
+import postRouter from './routes/post';
 import signUpRouter from './routes/signup';
 import userRouter from './routes/user';
 
@@ -84,7 +85,7 @@ app.use('/', indexRouter);
 app.use('/admin', adminRouter);
 app.use('/user', userRouter);
 app.use('/login',loginRouter);
-app.use('/logout',logoutRouter);
+app.use('/post',postRouter);
 app.use('/signup',signUpRouter);
 app.use('/comment',commentRouter);
 

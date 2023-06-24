@@ -104,7 +104,7 @@ const updatePost = async function(req:Request, res:Response, next:NextFunction){
     const db = mongoose.connection;
     try{
         await db.transaction(async function finalisePostUpdate(session){
-            await Comment.updateOne({
+            await Post.updateOne({
                 _id: req.body._id
                 },
                 [{
@@ -128,7 +128,7 @@ const updatePost = async function(req:Request, res:Response, next:NextFunction){
 };
 
 
-export const deleteCommentController = [
+export const deletePostController = [
     checkUserIsAuthenticated,
     checkUserIsAdmin,
     body('_id','Post id must not be empty.')
