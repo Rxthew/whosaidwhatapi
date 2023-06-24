@@ -26,6 +26,9 @@ jest.mock('mongoose', () => {
 });
 
 const generateMocks = function(){
+    const mockCreate = jest.fn().mockImplementation(()=>{
+        return Promise.resolve(true)
+    })
     const mockDeleteOne = jest.fn().mockImplementation(()=>{
         return Promise.resolve(true)
     })
@@ -35,8 +38,6 @@ const generateMocks = function(){
     const mockFindById = jest.fn().mockImplementation(() =>{
         return Promise.resolve(true)
     })
-    const mockFindOne = jest.fn();
-
     const mockPostExists = jest.fn().mockImplementation(()=> {
         return Promise.resolve(true)
     });
@@ -48,14 +49,45 @@ const generateMocks = function(){
         ()=> Promise.resolve(true));
 
     return {
-        
+
+        mockCreate,
         mockDeleteOne,
         mockDeleteMany,
         mockFindById,
-        mockFindOne,
         mockPostExists,
         mockUpdateOne,
         mockUserExists
 
     }
 };
+
+const addOns = function(){
+    
+    const checkIfErrorsPresent = function(res:Response){
+        if(!('errors' in res.body)){throw new Error('Errors object not present')}
+    };
+
+    const mockIdParam = new mongoose.Types.ObjectId().toString();
+    const origin = 'http://localhost:3000';
+    
+    return {
+        checkIfErrorsPresent,
+        mockIdParam,
+        origin,
+    }
+
+};
+
+
+const { mockCreate, mockDeleteOne, mockDeleteMany,  mockFindById, mockPostExists, mockUpdateOne, mockUserExists,} = generateMocks();
+const { checkIfErrorsPresent, mockIdParam, origin} = addOns();
+
+Comment.deleteMany = mockDeleteMany;
+Post.create = mockCreate;
+Post.deleteOne = mockDeleteOne;
+Post.exists = mockPostExists;
+Post.findById = mockFindById;
+Post.updateOne = mockUpdateOne;
+User.exists = mockUserExists;
+
+
