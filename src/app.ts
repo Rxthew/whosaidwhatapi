@@ -85,6 +85,7 @@ app.use('/', indexRouter);
 app.use('/admin', adminRouter);
 app.use('/user', userRouter);
 app.use('/login',loginRouter);
+app.use('/logout',logoutRouter);
 app.use('/post',postRouter);
 app.use('/signup',signUpRouter);
 app.use('/comment',commentRouter);

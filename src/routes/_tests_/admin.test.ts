@@ -1,7 +1,7 @@
 import request from 'supertest';
 import { Response } from 'supertest'
 import app, { toggleAuthTestVariable } from '../../testapp';
-import Post from '../../models/post';
+import { Post } from '../../models/post';
 
 jest.mock('../../models/post');
 

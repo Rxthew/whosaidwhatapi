@@ -1,6 +1,6 @@
 
 import { Request, Response, NextFunction } from "express";
-import Post from "../models/post";
+import { Post } from "../models/post";
 import { User } from "../models/user";
 import { getUser, returnIndexData } from "./helpers/services";
 

@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Result, ValidationError, validationResult } from 'express-validator';
 import { DateTime } from 'luxon'; 
 import mongoose from 'mongoose';
-import Post from '../../models/post';
+import { Post } from '../../models/post';
 import { User } from '../../models/user';
 
 const _basicPostRequestFailed = function(res:Response, errors: Result<ValidationError>){

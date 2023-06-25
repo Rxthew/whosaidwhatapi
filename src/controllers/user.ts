@@ -2,8 +2,8 @@ import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from "express";
 import { body, param } from 'express-validator';
 import mongoose from "mongoose";
-import Comment from '../models/comment';
-import Post from '../models/post';
+import { Comment } from '../models/comment';
+import { Post } from '../models/post';
 import { User } from "../models/user";
 import { basicValidation,  checkValidityOfUserId, hashPassword, noDuplicateUsernames, redirectToOrigin, userExistsInDatabase } from "./helpers/services";
 

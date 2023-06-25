@@ -1,8 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
 import mongoose from 'mongoose';
-import  Comment  from '../models/comment';
-import Post from '../models/post';
+import  { Comment }  from '../models/comment';
 import { basicValidation, checkValidityOfPostId, checkValidityOfUserId, checkUserIsAuthenticated, 
     generateDate, redirectToOrigin, postExistsInDatabase, userExistsInDatabase } from './helpers/services';
 

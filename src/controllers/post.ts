@@ -1,8 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { body } from 'express-validator';
 import mongoose from 'mongoose';
-import Comment from '../models/comment';
-import Post from '../models/post';
+import { Comment } from '../models/comment';
+import { Post } from '../models/post';
 import { basicValidation, checkUserIsAuthenticated, checkValidityOfPostId, checkValidityOfUserId, generateDate, postExistsInDatabase, redirectToOrigin, userExistsInDatabase } from './helpers/services';
 
 const _cascadeDeletePostComments = async function(postId: mongoose.ObjectId | string, session: mongoose.mongo.ClientSession){

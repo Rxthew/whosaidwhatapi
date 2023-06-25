@@ -1,7 +1,7 @@
 import mongoose from 'mongoose';
 import request, { Response } from 'supertest';
-import  Comment  from '../../models/comment';
-import Post from '../../models/post';
+import { Comment }  from '../../models/comment';
+import { Post } from '../../models/post';
 import { User } from '../../models/user';
 import app, { toggleAuthTestVariable } from '../../testapp';
 

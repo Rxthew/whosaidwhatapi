@@ -19,4 +19,4 @@ PostSchema.virtual('comments',{
     foreignField: 'post'
 } )
 
-export default mongoose.model('Post', PostSchema);
+export const Post =  mongoose.model('Post', PostSchema);

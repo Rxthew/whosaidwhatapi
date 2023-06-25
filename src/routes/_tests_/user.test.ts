@@ -3,8 +3,8 @@ import mongoose, { connection } from 'mongoose';
 import request from 'supertest';
 import { Response } from 'supertest'
 import app from '../../testapp';
-import Comment from '../../models/comment';
-import Post from '../../models/post';
+import { Comment } from '../../models/comment';
+import { Post } from '../../models/post';
 import {User} from '../../models/user';
 
 
