@@ -13,12 +13,7 @@ declare global {
 
 const getWithAnonymisedComments = async function(){
     try{
-        const posts = await Post.find({published_status: true},
-            {
-            projection: {
-                _id: 0
-                }
-            })
+        const posts = await Post.find({published_status: true})
             .populate({
                 path: 'comments',
                 select: {
@@ -41,12 +36,7 @@ const getWithAnonymisedComments = async function(){
 
 const getWithPopulatedComments = async function(){
     try{
-        const posts = await Post.find({published_status: true},
-            {
-            projection: {
-                _id: 0
-                }
-            })
+        const posts = await Post.find({published_status: true})
             .populate({
                 path: 'comments',
                 select: {
