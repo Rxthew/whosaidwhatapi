@@ -1,6 +1,7 @@
 import bcrypt from 'bcryptjs';
 import { Request, Response, NextFunction } from 'express';
 import { Result, ValidationError, validationResult } from 'express-validator';
+import { DateTime } from 'luxon'; 
 import mongoose from 'mongoose';
 import Post from '../../models/post';
 import { User } from '../../models/user';
@@ -63,8 +64,8 @@ export const getUser = async function(req:Request, res:Response, next:NextFuncti
     }
 };
 
-export const generateDate = function(){  //To refine
-    return Date.now(); 
+export const generateDate = function(){
+    return DateTime.utc().toISO();
 };
 
 export const hashPassword = async function(password: string){
