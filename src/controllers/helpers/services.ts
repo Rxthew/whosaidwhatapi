@@ -16,52 +16,46 @@ const _basicPostRequestFailed = function(res:Response, errors: Result<Validation
 export const basicValidation = function(req:Request,res:Response,next:NextFunction){
     const errors = validationResult(req)
     const checkEmpty = errors.isEmpty();
-    if(checkEmpty){
-        next()
-        return
-    }
-    _basicPostRequestFailed(res,errors)
+    checkEmpty ? next() : false;
+    return checkEmpty || _basicPostRequestFailed(res, errors)
+    
 };
 
 export const checkValidityOfPostId = function(id:string | mongoose.Types.ObjectId | unknown){
     const result = mongoose.isObjectIdOrHexString(id);
-    if(!result){
-        throw new Error('Post\'s object id is invalid.')
-    }
-    return result    
+    const postError = () => {throw new Error('Post\'s object id is invalid.')}
+    return result || postError()   
 
 };
 
 export const checkValidityOfUserId = function(id:string | mongoose.Types.ObjectId | unknown){
     const result = mongoose.isObjectIdOrHexString(id);
-    if(!result){
-        throw new Error('User\'s object id is invalid.')
-    }
-    return result
+    const userError = () => {throw new Error('User\'s object id is invalid.')}
+    return result || userError()
 
 };
 
 export const checkUserIsAuthenticated = function(req:Request, res:Response, next:NextFunction){
-    if(req.isAuthenticated()){
-        next()
-    }
-    else{
-        res.status(400).json({'errors': {msg: 'User is not authenticated'}})
-
-    }  
+    req.isAuthenticated() ? next() : res.status(400).json({'errors': {msg: 'User is not authenticated'}})  
 };
 
 export const getUser = async function(req:Request, res:Response, next:NextFunction){
-    if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
-        const user = req.isAuthenticated() ? req.user : false;
-        if(user){
-            Object.assign(req.body,{user: {username: user.username, member_status: user.member_status, _id: user._id}})
-        }
-        next()
+
+    try{
+        const filterUserData = function(auth:boolean){
+            const user = auth ? req.user : false;
+            user ? Object.assign(req.body,{user: {username: user.username, member_status: user.member_status, _id: user._id}}) : false 
+            next()
+            return true
+        };
+
+        req.isAuthenticated() ? filterUserData(req.isAuthenticated()) : next()
+
     }
-    else{
-        res.json({err: {msg: 'Could not authenticate user.'}})
+    catch(error){
+        throw error
     }
+      
 };
 
 export const generateDate = function(){
@@ -92,29 +86,20 @@ export const noDuplicateUsernames = async function(username:string){
 
 export const postExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await Post.exists({'_id': id}).catch((err:Error)=>{throw err});
-    if(!result){
-        throw new Error('Post object id is not in database')
-    }
-    return result
+    const postError = () => {throw new Error('Post object id is not in database')}
+    return result || postError()
 
 }
 
 export const redirectToReferringPage = function(req:Request,res:Response,next:NextFunction){
     const referer = req.get('Referer')
-    if(referer){
-        res.redirect(referer);
-        return
-    }
-    next();
+    return referer ? res.redirect(referer) : next()
+
 };
 
 export const redirectToOrigin = function(req:Request,res:Response, next:NextFunction){
     const origin = req.get('Origin');
-    if(origin){
-        res.redirect(origin)
-        return
-    }
-    next()
+    return origin ? res.redirect(origin) : next()
     
 };
 
@@ -126,10 +111,8 @@ export const returnIndexData = function(req:Request, res:Response, next:NextFunc
 
 export const userExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await User.exists({'_id': id}).catch((err:Error)=>{throw err});
-    if(!result){
-        throw new Error('User object id is not in database')
-    }
-    return result
+    const userError = () => { throw new Error('User object id is not in database')}
+    return result || userError()
 
 };
 

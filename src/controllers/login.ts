@@ -18,11 +18,13 @@ const confirmLogin = function(req:Request, res:Response, next: NextFunction){
 const loginValidation = basicValidation;
 
 const supplyUserInfo = function(req:Request, res:Response, next:NextFunction){
-    if(req.user){
-        const user = Object.assign(req.user, {password: ''});
+    
+    const filteredUserInfo = function(userRequest:Record<string,any>){
+        const user = Object.assign(userRequest, {password: ''});
         res.json(user)
     }
-    next()
+    req.user ? filteredUserInfo(req.user) : next()
+    
 };
 
 

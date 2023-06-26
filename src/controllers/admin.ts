@@ -38,15 +38,8 @@ const getDetailedPosts = async function(req:Request, res:Response, next:NextFunc
 }
 
 const checkUserIsAdmin = async function(req:Request, res:Response, next:NextFunction){
-    const user = req.user;
     const memberStatus = req.user?.member_status;
-    if(memberStatus === 'admin'){
-       next()
-    }
-    else{
-       res.status(400).json({'errors': {msg: 'User member status needs to be admin.'}})
-    }
-
+    memberStatus === 'admin' ? next() : res.status(400).json({'errors': {msg: 'User member status needs to be admin.'}})
 
 };
 

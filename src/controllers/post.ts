@@ -12,13 +12,8 @@ const _cascadeDeletePostComments = async function(postId: mongoose.ObjectId | st
 
 const checkUserIsAdmin = function(req:Request, res:Response, next:NextFunction){
     const memberStatus = req.user?.member_status;
-    if(memberStatus === 'admin'){
-       next()
-    }
-    else{
-       res.status(400).json({'errors': {msg: 'User member status does not have the necessary privilege for this request'}})
-    }
-
+    const isAdmin = memberStatus === 'admin';
+    return isAdmin ? next() : res.status(400).json({'errors': {msg: 'User member status does not have the necessary privilege for this request'}})
 };
 
 const createPost = async function(req:Request, res:Response, next:NextFunction){
@@ -49,12 +44,9 @@ const checkPostOwnership = async function(req:Request, res:Response, next:NextFu
 
     const userId = req.user?._id 
     const postId = req.body._id;
-    const post = await Post.findById({_id: postId}).catch((error:Error)=>{throw error})
-    if(post?.user.toString() !== userId?.toString()){
-        res.status(400).json({'errors': {msg: 'User is not the owner of this post so this operation is not allowed'}})
-        return   
-    }
-    next()
+    const post = await Post.findById({_id: postId}).catch((error:Error)=>{throw error});
+    const notTheOwner = post?.user.toString() !== userId?.toString();
+    return notTheOwner ? res.status(400).json({'errors': {msg: 'User is not the owner of this post so this operation is not allowed'}}) : next() 
 
 };
 

@@ -55,24 +55,20 @@ const _confirmPasswordInputs = function(req:Request){
 
 
 const checkCurrentPassword = async function(req:Request, res:Response, next:NextFunction){
-    const inputsArePresent = _confirmPasswordInputs(req) ? true : false;
-    if(!inputsArePresent){
-        next()
-        return
-    } 
-    const id = req.params['id'];
-    const nominalCurrentPassword = await hashPassword(req.body.current_password);
-    const realCurrentPassword = await _getCurrentPassword(id);
-    const comparisonResult = realCurrentPassword ? await bcrypt.compare(nominalCurrentPassword, realCurrentPassword) : false;
-    if(comparisonResult){
-        next()
-        return
-    }
-    res.status(400).json({'errors': {msg:'Current password is incorrect. Please try again.'}})
+
+    const comparePasswords = async function(){
+        const id = req.params['id'];
+        const nominalCurrentPassword = await hashPassword(req.body.current_password);
+        const realCurrentPassword = await _getCurrentPassword(id);
+        const comparisonResult = realCurrentPassword ? await bcrypt.compare(nominalCurrentPassword, realCurrentPassword) : false;
+        return comparisonResult ? next : res.status(400).json({'errors': {msg:'Current password is incorrect. Please try again.'}})
     
+    };
 
+    const inputsArePresent = _confirmPasswordInputs(req);
+    return inputsArePresent ? await comparePasswords() : next()
+    
 };
-
 
 const assignNewPassword = async function(req:Request, res:Response, next:NextFunction){
     const inputsArePresent = _confirmPasswordInputs(req) ? true : false;

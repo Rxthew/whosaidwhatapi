@@ -11,22 +11,15 @@ const Types = mongoose.Types;
 
 const _checkValidityOfCommentId = function(id:string | mongoose.Types.ObjectId | unknown){
     const result = mongoose.isObjectIdOrHexString(id);
-    if(!result){
-        throw new Error('Comment\'s object id is invalid.')
-    }
-    return result
-
+    const commentError = () => {throw new Error('Comment\'s object id is invalid.')}
+    return result || commentError()
 };
 
 const _commentExistsInDatabase = async function(id:string | mongoose.Types.ObjectId | unknown){
     const result = await Comment.exists({'_id': id}).catch((err:Error)=>{throw err});
-    if(!result){
-        throw new Error('Comment object id is not in database')
-    }
-    return result
+    const commentError = () => {throw new Error('Comment object id is not in database')}
+    return result || commentError()
 };
-
-
 
 const _userIsAdmin = function(status:string | undefined){
     return status === 'admin'
@@ -34,31 +27,25 @@ const _userIsAdmin = function(status:string | undefined){
 };
 
 const checkUserIsPrivileged = function(req:Request, res:Response, next:NextFunction){
-     const user = req.user;
      const memberStatus = req.user?.member_status;
-     if(memberStatus === 'privileged' || memberStatus === 'admin'){
-        next()
-     }
-     else{
-        res.status(400).json({'errors': {msg: 'User member status does not have the necessary privilege for this request'}})
-     }
+     const isPrivileged = memberStatus === 'privileged' || memberStatus === 'admin';
+     isPrivileged ? next() :  res.status(400).json({'errors': {msg: 'User member status does not have the necessary privilege for this request'}})
 
 };
 
 const checkCommentOwnership = async function(req:Request, res:Response, next:NextFunction){
-    if(_userIsAdmin(req.user?.member_status)){
-        next();
-        return
-    }
-    const userId = req.user?._id 
-    const commentId = req.body._id;
-    const comment = await Comment.findById({_id: commentId}).catch((error:Error)=>{throw error})
-    if(comment?.user.toString() !== userId?.toString()){
-        res.status(400).json({'errors': {msg: 'User is not the owner of this comment so this operation is not allowed'}})
-        return   
-    }
-    next()
 
+    const parseOwnership = async function(){
+        const userId = req.user?._id 
+        const commentId = req.body._id;
+        const comment = await Comment.findById({_id: commentId}).catch((error:Error)=>{throw error})
+        const notTheOwner = comment?.user.toString() !== userId?.toString()
+        return notTheOwner ? res.status(400).json({'errors': {msg: 'User is not the owner of this comment so this operation is not allowed'}}) : next()
+    }
+
+    const isAdmin = _userIsAdmin(req.user?.member_status)
+    return isAdmin ? next() : await parseOwnership()
+    
 };
 
 
