@@ -210,6 +210,7 @@ const updateUserValidation = basicValidation;
 
 export const deleteUserController = [
     param('id', '_id must not be empty')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('_id must not be empty.')
@@ -226,6 +227,7 @@ export const deleteUserController = [
 
 export const putUserController = [
     param('id', '_id must not be empty')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('_id must not be empty.')

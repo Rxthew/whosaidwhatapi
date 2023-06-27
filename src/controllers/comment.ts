@@ -138,6 +138,7 @@ export const deleteCommentController = [
     checkUserIsAuthenticated,
     checkUserIsPrivileged,
     body('_id','Comment id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Comment id must not be empty.')
@@ -155,16 +156,19 @@ export const postCommentController = [
     checkUserIsAuthenticated,
     checkUserIsPrivileged,
     body('content','Content must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Content must not be empty.')
     .escape(),
     body('post','Post id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Post id must not be empty.')
     .escape(),
     body('user','User id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('User id must not be empty.')
@@ -183,21 +187,25 @@ export const putCommentController = [
     checkUserIsAuthenticated,
     checkUserIsPrivileged,
     body('content','Content must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Content must not be empty.')
     .escape(),
     body('_id','Comment id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Comment id must not be empty.')
     .escape(),
     body('post','Post id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Post id must not be empty.')
     .escape(),
     body('user','User id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('User id must not be empty.')

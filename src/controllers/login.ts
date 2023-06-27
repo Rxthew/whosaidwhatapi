@@ -30,9 +30,11 @@ const supplyUserInfo = function(req:Request, res:Response, next:NextFunction){
 
 const loginController = [
     body('username', 'username must not be empty')
+    .exists()
     .trim()
     .escape(),
     body('password','Password must not be empty')
+    .exists()
     .trim()
     .isLength({min: 8})
     .withMessage('password needs to be a minimum of 8 characters')

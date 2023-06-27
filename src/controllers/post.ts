@@ -124,6 +124,7 @@ export const deletePostController = [
     checkUserIsAuthenticated,
     checkUserIsAdmin,
     body('_id','Post id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Post id must not be empty.')
@@ -141,16 +142,19 @@ export const postPostController = [
     checkUserIsAuthenticated,
     checkUserIsAdmin,
     body('content','Content must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Content must not be empty.')
     .escape(),
     body('title','Title must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Title must not be empty.')
     .escape(),
     body('user','User id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('User id must not be empty.')
@@ -168,21 +172,25 @@ export const putPostController = [
     checkUserIsAuthenticated,
     checkUserIsAdmin,
     body('content','Content must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Content must not be empty.')
     .escape(),
     body('title','Title must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Title must not be empty.')
     .escape(),
     body('_id','Post id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('Post id must not be empty.')
     .escape(),
     body('user','User id must not be empty.')
+    .exists()
     .trim()
     .notEmpty()
     .withMessage('User id must not be empty.')

@@ -66,20 +66,24 @@ const confirmSignup = function(req:Request, res:Response, next: NextFunction){
 
 const signUpController = [
     body('first_name','First name must not be empty.')
+    .exists()
     .trim()
     .isAlpha()
     .withMessage('Characters in this field must be from the alphabet.')
     .escape(),
     body('last_name', 'Last name must not be empty')
+    .exists()
     .trim()
     .isAlpha(undefined,{ignore: ' -'})
     .withMessage('Characters in this field must be from the alphabet or a hyphen.')
     .escape(),
     body('username', 'username must not be empty')
+    .exists()
     .trim()
     .escape(),
     body('username').custom(noDuplicateUsernames),
     body('password','Password must not be empty')
+    .exists()
     .trim()
     .isLength({min: 8})
     .withMessage('password needs to be a minimum of 8 characters')
