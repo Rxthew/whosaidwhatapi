@@ -11,7 +11,7 @@ import { basicValidation,  checkValidityOfUserId, hashPassword, noDuplicateUsern
 const _cascadeDeletePosts = async function(userId: mongoose.ObjectId | string, session: mongoose.mongo.ClientSession){
 
     const _retrieveUserPosts = async function(){
-        const posts = await Post.find({user: userId}, {session}).catch((err:Error)=>{throw err});
+        const posts = await Post.find({user: userId},{}, {session}).catch((err:Error)=>{throw err});
         return posts
     };
 
