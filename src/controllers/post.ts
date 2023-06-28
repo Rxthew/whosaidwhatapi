@@ -130,6 +130,7 @@ export const deletePostController = [
     .withMessage('Post id must not be empty.')
     .escape(),
     body('_id').custom(checkValidityOfPostId),
+    body('_id').custom(postExistsInDatabase),
     postValidation,
     checkPostOwnership,
     deletePost,

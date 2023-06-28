@@ -216,6 +216,7 @@ export const deleteUserController = [
     .withMessage('_id must not be empty.')
     .escape(),
     param('id').custom(checkValidityOfUserId),
+    param('id').custom(userExistsInDatabase),
     deleteUserValidation,
     deleteUser,
     redirectToOrigin,

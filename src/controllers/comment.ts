@@ -144,6 +144,7 @@ export const deleteCommentController = [
     .withMessage('Comment id must not be empty.')
     .escape(),
     body('_id').custom(_checkValidityOfCommentId),
+    body('_id').custom(_commentExistsInDatabase),
     commentValidation,
     checkCommentOwnership,
     deleteComment,
