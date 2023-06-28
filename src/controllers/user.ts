@@ -61,7 +61,7 @@ const checkCurrentPassword = async function(req:Request, res:Response, next:Next
         const nominalCurrentPassword = await hashPassword(req.body.current_password);
         const realCurrentPassword = await _getCurrentPassword(id);
         const comparisonResult = realCurrentPassword ? await bcrypt.compare(nominalCurrentPassword, realCurrentPassword) : false;
-        return comparisonResult ? next : res.status(400).json({'errors': {msg:'Current password is incorrect. Please try again.'}})
+        return comparisonResult ? next() : res.status(400).json({'errors': {msg:'Current password is incorrect. Please try again.'}})
     
     };
 
@@ -72,15 +72,16 @@ const checkCurrentPassword = async function(req:Request, res:Response, next:Next
 
 const assignNewPassword = async function(req:Request, res:Response, next:NextFunction){
     const inputsArePresent = _confirmPasswordInputs(req) ? true : false;
-    if(!inputsArePresent){
-        next()
-        return
-    }
-    const rawNewPassword = req.body.new_password.trim();
-    const newPassword = rawNewPassword.length > 0 ? await hashPassword(req.body.new_password) : false;
-    newPassword ? Object.assign(req.body, {password: newPassword}) : false
-    next();
+    
+    const executeAssignment = async function(){
+        const rawNewPassword = req.body.new_password.trim();
+        const newPassword = rawNewPassword.length > 0 ? await hashPassword(req.body.new_password) : false;
+        newPassword ? Object.assign(req.body, {password: newPassword}) : false
+        next();
+    };
 
+    return inputsArePresent ? await executeAssignment() : next()
+    
 };
 
 const confirmDelete = function(req:Request, res:Response, next: NextFunction){
@@ -158,18 +159,15 @@ const establishUpdateBody = function(req:Request ,res:Response, next:NextFunctio
 const reassignMembership = function(req:Request, res: Response, next:NextFunction){
 
     const adminMember = function(){
-        if(req.body.admin_code && req.body.admin_code === '4321'){
-            return Object.assign(req.body, {member_status: 'admin'})   
-        }
-        return null
+        const isAdminValid = req.body.admin_code && req.body.admin_code === '4321';
+        return isAdminValid ? Object.assign(req.body, {member_status: 'admin'}) : null
+
     };
 
     const privilegedMember = function(){
-        if(req.body.privilege_code && req.body.privilege_code === '1234'){
-           return Object.assign(req.body, {member_status: 'privileged'})
-    
-        }
-        return null
+        const isPrivilegeValid = req.body.privilege_code && req.body.privilege_code === '1234';
+        return isPrivilegeValid ? Object.assign(req.body, {member_status: 'privileged'}) : null
+        
     };
 
     const regularMember = function(){

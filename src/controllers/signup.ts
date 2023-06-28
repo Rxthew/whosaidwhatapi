@@ -10,18 +10,15 @@ import { User } from '../models/user';
 const assignMembership = function(req:Request, res: Response, next:NextFunction){
 
     const adminMember = function(){
-        if(req.body.admin_code && req.body.admin_code === '4321'){
-            return Object.assign(req.body, {member_status: 'admin'})   
-        }
-        return null
+        const isAdminValid = req.body.admin_code && req.body.admin_code === '4321';
+        return isAdminValid ? Object.assign(req.body, {member_status: 'admin'}) : null
+
     };
 
     const privilegedMember = function(){
-        if(req.body.privilege_code && req.body.privilege_code === '1234'){
-           return Object.assign(req.body, {member_status: 'privileged'})
-    
-        }
-        return null
+        const isPrivilegeValid = req.body.privilege_code && req.body.privilege_code === '1234';
+        return isPrivilegeValid ? Object.assign(req.body, {member_status: 'privileged'}) : null
+        
     };
 
     const regularMember = function(){
