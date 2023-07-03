@@ -99,12 +99,13 @@ const updatePost = async function(req:Request, res:Response, next:NextFunction){
             await Post.updateOne({
                 _id: req.body._id
                 },
-                [{
+                {
                 title: req.body.title,
                 content: req.body.content,
                 published_status: req.body.published_status || false, 
                 user: new mongoose.Types.ObjectId(req.body.user.trim()), 
-                date: generateDate()}], {session})
+                date: generateDate()
+            }, {session})
             .catch(
                 (err:Error)=> {throw err}
                 )

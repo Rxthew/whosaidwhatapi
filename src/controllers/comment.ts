@@ -115,11 +115,12 @@ const updateComment = async function(req:Request, res:Response, next:NextFunctio
             await Comment.updateOne({
                 _id: req.body._id
                 },
-                [{
+                {
                 content: req.body.content,
                 post: new Types.ObjectId(req.body.post.trim()), 
                 user: new Types.ObjectId(req.body.user.trim()), 
-                date: generateDate()}], {session})
+                date: generateDate()
+            }, {session})
             .catch(
                 (err:Error)=> {throw err}
                 )
