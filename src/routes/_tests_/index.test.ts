@@ -10,7 +10,7 @@ const generateMocks = function(){
             populate: (obj: Record<string, any>) => {
                 return { 
                     exec: () => {return {
-                        comment_author: obj.select.user ? 'visible' : 'anonymous'
+                        comment_author: obj.select.includes('user') ? 'visible' : 'anonymous'
                     }}
                 }
             },

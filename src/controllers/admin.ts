@@ -9,23 +9,10 @@ const getDetailedPosts = async function(req:Request, res:Response, next:NextFunc
         const posts = await Post.find({})
             .populate({
                 path: 'comments',
-                select: {
-                    content: 1, 
-                    date: 1, 
-                    user: 1, 
-                    _id: 1, 
-                    post: 0
-                },
+                select: 'content date user _id -post',
                 populate: {
                     path: 'user',
-                    select: {
-                    username: 1,
-                    _id: 1,
-                    first_name: 1,
-                    last_name: 1,
-                    password: 0,
-                    member_status: 1
-                    }
+                    select: 'username _id first_name last_name member_status'
                 }
             })
             .exec()
@@ -33,7 +20,7 @@ const getDetailedPosts = async function(req:Request, res:Response, next:NextFunc
             next()
     }
     catch(err){
-        return err ? err : undefined
+        return res.status(400).json({'errors': {err: err, msg: 'Query return an error'}})
     }
 }
 

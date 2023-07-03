@@ -16,13 +16,7 @@ const getWithAnonymisedComments = async function(){
         const posts = await Post.find({published_status: true})
             .populate({
                 path: 'comments',
-                select: {
-                    content: 1,
-                     date: 1, 
-                     _id: 1, 
-                     post: 0, 
-                     user: 0
-                    }
+                select: 'content date _id -post'
             })
             .exec();
         return posts
@@ -39,23 +33,10 @@ const getWithPopulatedComments = async function(){
         const posts = await Post.find({published_status: true})
             .populate({
                 path: 'comments',
-                select: {
-                    content: 1, 
-                    date: 1, 
-                    user: 1, 
-                    _id: 1, 
-                    post: 0
-                },
+                select:  'content date user _id -post',
                 populate: {
                     path: 'user',
-                    select: {
-                    username: 1,
-                    _id: 0,
-                    first_name: 0,
-                    last_name: 0,
-                    password: 0,
-                    member_status: 0
-                    }
+                    select: 'username'
                 }
             })
             .exec()
@@ -70,7 +51,7 @@ const getWithPopulatedComments = async function(){
 const getAllPosts = async function(req:Request, res:Response, next:NextFunction){
     if(Object.prototype.hasOwnProperty.call(req,'isAuthenticated')){
         try{
-            const posts = req.isAuthenticated() ? await getWithPopulatedComments() : await getWithAnonymisedComments()
+            const posts = req.isAuthenticated() ? await getWithPopulatedComments().catch((err)=> {throw err}) : await getWithAnonymisedComments().catch((err)=> {throw err})
             posts ? Object.assign(req.body, {posts: posts}) : false
             next()
         }
