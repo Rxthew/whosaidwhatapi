@@ -6,7 +6,7 @@ import { Post } from '../models/post';
 import { basicValidation, checkUserIsAuthenticated, checkValidityOfPostId, checkValidityOfUserId, generateDate, postExistsInDatabase, redirectToOrigin, userExistsInDatabase } from './helpers/services';
 
 const _cascadeDeletePostComments = async function(postId: mongoose.ObjectId | string, session: mongoose.mongo.ClientSession){
-    await Comment.deleteMany({user: postId}, {session}).catch((err:Error)=> {throw err})
+    await Comment.deleteMany({post: postId}, {session}).catch((err:Error)=> {throw err})
 };
 
 

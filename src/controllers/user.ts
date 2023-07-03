@@ -48,9 +48,10 @@ const _getCurrentPassword = async function(id:mongoose.Types.ObjectId | string){
 
 
 const _confirmPasswordInputs = function(req:Request){
-    const newPassword = req.body.new_password.trim();
-    const currentPassword = req.body.current_password.trim();
-    return newPassword && currentPassword
+    const newPassword = req.body.new_password;
+    const currentPassword = req.body.current_password;
+    const confirm = newPassword && currentPassword;
+    return confirm
 };
 
 
@@ -58,7 +59,7 @@ const checkCurrentPassword = async function(req:Request, res:Response, next:Next
 
     const comparePasswords = async function(){
         const id = req.params['id'];
-        const nominalCurrentPassword = await hashPassword(req.body.current_password);
+        const nominalCurrentPassword = await hashPassword(req.body.current_password.trim());
         const realCurrentPassword = await _getCurrentPassword(id);
         const comparisonResult = realCurrentPassword ? await bcrypt.compare(nominalCurrentPassword, realCurrentPassword) : false;
         return comparisonResult ? next() : res.status(400).json({'errors': {msg:'Current password is incorrect. Please try again.'}})
@@ -245,7 +246,8 @@ export const putUserController = [
     .isAlpha(undefined,{ignore: ' -'})
     .withMessage('Characters in this field must be from the alphabet or a hyphen.')
     .escape(),
-    body('username', 'username must not be empty')
+    body('username')
+    .optional({checkFalsy: true})
     .trim()
     .escape(),
     body('username')
