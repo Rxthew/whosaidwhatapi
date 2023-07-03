@@ -193,20 +193,33 @@ DELETE {{origin}}/user/64a2cede1908d4c677c1446c
 
 ###
 
-#Error is in relating to user update. After user updated
-#ensure that he creates a comment on the original post.
-#then when admin deletes the post, it's supposed to
-#delete that comment as well via cascade.
-#make multiples posts from admin just to be safe.
 PUT {{origin}}/user/649bee6d2405ff69ac84a447
 {{contentJson}}
 #Update user
 
+#Note: Input different ID param since this one is expired.
+
 {
-    "username": "johndoe"
+    "privilege_code": "1234"
 }
 
-#Note: Input different ID param since this one is expired.
+
+
+###
+DELETE {{origin}}/user/64a2c3570b84292df96bdc4a
+{{contentJson}}
+#Delete admin user
+
+###
+
+DELETE {{origin}}/user/649bee6d2405ff69ac84a447
+{{contentJson}}
+#Delete John Doe user
+
+
+
+
+
 
 
 
