@@ -32,10 +32,14 @@ const loginController = [
   (0, express_validator_1.body)("username", "username must not be empty")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("username must not be empty.")
     .escape(),
   (0, express_validator_1.body)("password", "Password must not be empty")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty.")
     .isLength({ min: 8 })
     .withMessage("password needs to be a minimum of 8 characters")
     .escape(),

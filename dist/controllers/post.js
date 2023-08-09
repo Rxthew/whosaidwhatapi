@@ -26,13 +26,11 @@ const checkUserIsAdmin = function (req, res, next) {
   const isAdmin = memberStatus === "admin";
   return isAdmin
     ? next()
-    : res
-        .status(400)
-        .json({
-          errors: {
-            msg: "User member status does not have the necessary privilege for this request",
-          },
-        });
+    : res.status(400).json({
+        errors: {
+          msg: "User member status does not have the necessary privilege for this request",
+        },
+      });
 };
 const createPost = async function (req, res, next) {
   const db = mongoose_1.default.connection;
@@ -71,13 +69,11 @@ const checkPostOwnership = async function (req, res, next) {
   });
   const notTheOwner = post?.user.toString() !== userId?.toString();
   return notTheOwner
-    ? res
-        .status(400)
-        .json({
-          errors: {
-            msg: "User is not the owner of this post so this operation is not allowed",
-          },
-        })
+    ? res.status(400).json({
+        errors: {
+          msg: "User is not the owner of this post so this operation is not allowed",
+        },
+      })
     : next();
 };
 const confirmPostCreated = function (req, res, next) {

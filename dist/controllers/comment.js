@@ -39,13 +39,11 @@ const checkUserIsPrivileged = function (req, res, next) {
     memberStatus === "privileged" || memberStatus === "admin";
   isPrivileged
     ? next()
-    : res
-        .status(400)
-        .json({
-          errors: {
-            msg: "User member status does not have the necessary privilege for this request",
-          },
-        });
+    : res.status(400).json({
+        errors: {
+          msg: "User member status does not have the necessary privilege for this request",
+        },
+      });
 };
 const checkCommentOwnership = async function (req, res, next) {
   const parseOwnership = async function () {
@@ -58,13 +56,11 @@ const checkCommentOwnership = async function (req, res, next) {
     );
     const notTheOwner = comment?.user.toString() !== userId?.toString();
     return notTheOwner
-      ? res
-          .status(400)
-          .json({
-            errors: {
-              msg: "User is not the owner of this comment so this operation is not allowed",
-            },
-          })
+      ? res.status(400).json({
+          errors: {
+            msg: "User is not the owner of this comment so this operation is not allowed",
+          },
+        })
       : next();
   };
   const isAdmin = _userIsAdmin(req.user?.member_status);

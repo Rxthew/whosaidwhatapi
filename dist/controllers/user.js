@@ -85,11 +85,9 @@ const checkCurrentPassword = async function (req, res, next) {
       : false;
     return comparisonResult
       ? next()
-      : res
-          .status(400)
-          .json({
-            errors: { msg: "Current password is incorrect. Please try again." },
-          });
+      : res.status(400).json({
+          errors: { msg: "Current password is incorrect. Please try again." },
+        });
   };
   const inputsArePresent = _confirmPasswordInputs(req);
   return inputsArePresent ? await comparePasswords() : next();
@@ -167,13 +165,11 @@ const establishUpdateBody = function (req, res, next) {
   userProperties.map(parseProperty);
   _checkUpdateBodyLength(updateBody)
     ? Object.assign(req.body, { update: updateBody })
-    : res
-        .status(400)
-        .json({
-          errors: {
-            msg: "Update fields are either empty or invalid. Please try again",
-          },
-        });
+    : res.status(400).json({
+        errors: {
+          msg: "Update fields are either empty or invalid. Please try again",
+        },
+      });
   next();
 };
 const reassignMembership = function (req, res, next) {

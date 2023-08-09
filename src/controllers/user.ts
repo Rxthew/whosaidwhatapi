@@ -103,11 +103,9 @@ const checkCurrentPassword = async function (
       : false;
     return comparisonResult
       ? next()
-      : res
-          .status(400)
-          .json({
-            errors: { msg: "Current password is incorrect. Please try again." },
-          });
+      : res.status(400).json({
+          errors: { msg: "Current password is incorrect. Please try again." },
+        });
   };
 
   const inputsArePresent = _confirmPasswordInputs(req);
@@ -224,13 +222,11 @@ const establishUpdateBody = function (
 
   _checkUpdateBodyLength(updateBody)
     ? Object.assign(req.body, { update: updateBody })
-    : res
-        .status(400)
-        .json({
-          errors: {
-            msg: "Update fields are either empty or invalid. Please try again",
-          },
-        });
+    : res.status(400).json({
+        errors: {
+          msg: "Update fields are either empty or invalid. Please try again",
+        },
+      });
   next();
 };
 

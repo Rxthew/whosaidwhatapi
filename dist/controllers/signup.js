@@ -64,12 +64,16 @@ const signUpController = [
   (0, express_validator_1.body)("first_name", "First name must not be empty.")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("First name must not be empty.")
     .isAlpha()
     .withMessage("Characters in this field must be from the alphabet.")
     .escape(),
   (0, express_validator_1.body)("last_name", "Last name must not be empty")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("Last name must not be empty.")
     .isAlpha(undefined, { ignore: " -" })
     .withMessage(
       "Characters in this field must be from the alphabet or a hyphen."
@@ -78,6 +82,8 @@ const signUpController = [
   (0, express_validator_1.body)("username", "username must not be empty")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("username must not be empty.")
     .escape(),
   (0, express_validator_1.body)("username").custom(
     services_1.noDuplicateUsernames
@@ -85,6 +91,8 @@ const signUpController = [
   (0, express_validator_1.body)("password", "Password must not be empty")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty.")
     .isLength({ min: 8 })
     .withMessage("password needs to be a minimum of 8 characters")
     .escape(),

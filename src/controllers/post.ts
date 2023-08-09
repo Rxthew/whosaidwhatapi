@@ -34,13 +34,11 @@ const checkUserIsAdmin = function (
   const isAdmin = memberStatus === "admin";
   return isAdmin
     ? next()
-    : res
-        .status(400)
-        .json({
-          errors: {
-            msg: "User member status does not have the necessary privilege for this request",
-          },
-        });
+    : res.status(400).json({
+        errors: {
+          msg: "User member status does not have the necessary privilege for this request",
+        },
+      });
 };
 
 const createPost = async function (
@@ -89,13 +87,11 @@ const checkPostOwnership = async function (
   });
   const notTheOwner = post?.user.toString() !== userId?.toString();
   return notTheOwner
-    ? res
-        .status(400)
-        .json({
-          errors: {
-            msg: "User is not the owner of this post so this operation is not allowed",
-          },
-        })
+    ? res.status(400).json({
+        errors: {
+          msg: "User is not the owner of this post so this operation is not allowed",
+        },
+      })
     : next();
 };
 

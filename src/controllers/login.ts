@@ -44,10 +44,17 @@ const supplyUserInfo = function (
 };
 
 const loginController = [
-  body("username", "username must not be empty").exists().trim().escape(),
+  body("username", "username must not be empty")
+    .exists()
+    .trim()
+    .notEmpty()
+    .withMessage("username must not be empty.")
+    .escape(),
   body("password", "Password must not be empty")
     .exists()
     .trim()
+    .notEmpty()
+    .withMessage("Password must not be empty.")
     .isLength({ min: 8 })
     .withMessage("password needs to be a minimum of 8 characters")
     .escape(),
