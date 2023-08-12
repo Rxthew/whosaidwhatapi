@@ -29,8 +29,8 @@ const username = process.env.username;
 const password = process.env.password;
 const applicableCORS =
   process.env.NODE_ENV === "production" && process.env.origin
-    ? cors({ origin: process.env.origin })
-    : cors();
+    ? cors({ origin: process.env.origin, credentials: true })
+    : cors({origin: "http://localhost:5173", credentials: true});
 
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`;
 mongoose.connect(mongoDb);
@@ -43,6 +43,7 @@ const sessionStore = MongoStore.create({
   mongoUrl: mongoDb,
 });
 
+app.use(applicableCORS);
 app.use(
   session({
     secret,
@@ -91,7 +92,6 @@ passport.deserializeUser(async (id, done) => {
 
 app.use(passport.initialize());
 app.use(passport.session());
-app.use(applicableCORS);
 app.use(methodOverride("_method"));
 app.use(logger("dev"));
 app.use(express.json());
