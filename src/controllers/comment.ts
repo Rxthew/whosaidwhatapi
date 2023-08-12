@@ -8,7 +8,6 @@ import {
   checkValidityOfUserId,
   checkUserIsAuthenticated,
   generateDate,
-  redirectToOrigin,
   postExistsInDatabase,
   userExistsInDatabase,
 } from "./helpers/services";
@@ -220,7 +219,6 @@ export const deleteCommentController = [
   commentValidation,
   checkCommentOwnership,
   deleteComment,
-  redirectToOrigin,
   confirmCommentDeleted,
 ];
 
@@ -251,7 +249,6 @@ export const postCommentController = [
   body("user").custom(userExistsInDatabase),
   commentValidation,
   createComment,
-  redirectToOrigin,
   confirmCommentCreated,
 ];
 
@@ -291,6 +288,5 @@ export const putCommentController = [
   commentValidation,
   checkCommentOwnership,
   updateComment,
-  redirectToOrigin,
   confirmCommentUpdated,
 ];

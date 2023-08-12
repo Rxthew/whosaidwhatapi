@@ -121,23 +121,6 @@ export const postExistsInDatabase = async function (
   return result || postError();
 };
 
-export const redirectToReferringPage = function (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const referer = req.get("Referer");
-  return referer ? res.redirect(referer) : next();
-};
-
-export const redirectToOrigin = function (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  const origin = req.get("Origin");
-  return origin ? res.redirect(origin) : next();
-};
 
 export const returnIndexData = function (
   req: Request,

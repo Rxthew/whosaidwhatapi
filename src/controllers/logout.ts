@@ -1,10 +1,17 @@
 import { Request, Response, NextFunction } from "express";
-import { redirectToReferringPage, redirectToOrigin } from "./helpers/services";
 
 //Note: reason I am nullifying the sessionID is because of race conditions in express
 //session where the touch method is sometimes invoked after the destroy method thereby
 //producing an error. Nullifying the sessionID prevents the touch method from being
 //invoked in the first place.
+
+const confirmLogout = function (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  res.json({ status: "Logout successful." });
+};
 
 const nullifySessionId = function (
   req: Request,
@@ -24,9 +31,4 @@ const logout = function (req: Request, res: Response, next: NextFunction) {
   next();
 };
 
-export const logoutController = [
-  nullifySessionId,
-  logout,
-  redirectToReferringPage,
-  redirectToOrigin,
-];
+export const logoutController = [nullifySessionId, logout, confirmLogout];

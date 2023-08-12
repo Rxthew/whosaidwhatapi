@@ -10,7 +10,6 @@ import {
   checkValidityOfUserId,
   hashPassword,
   noDuplicateUsernames,
-  redirectToOrigin,
   userExistsInDatabase,
 } from "./helpers/services";
 
@@ -304,7 +303,6 @@ export const deleteUserController = [
   param("id").custom(userExistsInDatabase),
   deleteUserValidation,
   deleteUser,
-  redirectToOrigin,
   confirmDelete,
 ];
 
@@ -357,6 +355,5 @@ export const putUserController = [
   reassignMembership,
   establishUpdateBody,
   updateUser,
-  redirectToOrigin,
   confirmUpdate,
 ];

@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { body } from "express-validator";
 import passport from "passport";
-import {
-  basicValidation,
-  redirectToOrigin,
-  redirectToReferringPage,
-} from "./helpers/services";
+import { basicValidation } from "./helpers/services";
 
 const authenticateUser = function (
   req: Request,
@@ -60,8 +56,6 @@ const loginController = [
     .escape(),
   loginValidation,
   authenticateUser,
-  redirectToReferringPage,
-  redirectToOrigin,
   supplyUserInfo,
   confirmLogin,
 ];

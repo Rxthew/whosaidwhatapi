@@ -10,7 +10,6 @@ import {
   checkValidityOfUserId,
   generateDate,
   postExistsInDatabase,
-  redirectToOrigin,
   userExistsInDatabase,
 } from "./helpers/services";
 
@@ -204,7 +203,6 @@ export const deletePostController = [
   postValidation,
   checkPostOwnership,
   deletePost,
-  redirectToOrigin,
   confirmPostDeleted,
 ];
 
@@ -233,7 +231,6 @@ export const postPostController = [
   body("user").custom(userExistsInDatabase),
   postValidation,
   createPost,
-  redirectToOrigin,
   confirmPostCreated,
 ];
 
@@ -271,6 +268,5 @@ export const putPostController = [
   postValidation,
   checkPostOwnership,
   updatePost,
-  redirectToOrigin,
   confirmPostUpdated,
 ];

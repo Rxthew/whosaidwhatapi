@@ -1,11 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { body } from "express-validator";
 import mongoose from "mongoose";
-import {
-  basicValidation,
-  noDuplicateUsernames,
-  redirectToOrigin,
-} from "./helpers/services";
+import { basicValidation, noDuplicateUsernames } from "./helpers/services";
 import { hashPassword } from "./helpers/services";
 import { User } from "../models/user";
 
@@ -128,7 +124,6 @@ const signUpController = [
   signUpValidation,
   assignMembership,
   saveUser,
-  redirectToOrigin,
   confirmSignup,
 ];
 
