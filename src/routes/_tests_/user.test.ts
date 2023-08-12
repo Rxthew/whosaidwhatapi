@@ -74,12 +74,10 @@ const addOns = function () {
   };
 
   const mockIdParam = new mongoose.Types.ObjectId().toString();
-  const origin = "http://localhost:3000";
 
   return {
     checkIfErrorsPresent,
     mockIdParam,
-    origin,
   };
 };
 
@@ -94,7 +92,7 @@ const {
   mockUpdateOne,
   mockUserExists,
 } = generateMocks();
-const { checkIfErrorsPresent, mockIdParam, origin } = addOns();
+const { checkIfErrorsPresent, mockIdParam } = addOns();
 
 bcrypt.compare = mockCompare;
 bcrypt.hash = mockHash;
@@ -107,29 +105,13 @@ User.findById = mockFindById;
 User.findOne = mockFindOne;
 User.updateOne = mockUpdateOne;
 
-describe("Delete user should redirect to origin or return confirmation ", () => {
+describe("Delete user should return success confirmation ", () => {
   beforeEach(() => {
     mockDeleteOne.mockClear();
   });
 
-  it("User delete with correct credentials and with Origin header should redirect", (done) => {
-    request(app)
-      .delete(`/user/${mockIdParam}`)
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/x-www-form-urlencoded")
-      .set("Origin", origin)
-      .expect(302)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        expect(mockDeleteOne).toHaveBeenCalled();
-        done();
-      });
-  });
 
-  it("User delete with correct credentials with no Origin header should return confirmation status", (done) => {
+  it("User delete with correct credentials should return confirmation status", (done) => {
     request(app)
       .delete(`/user/${mockIdParam}`)
       .set("Accept", "application/json")
@@ -222,90 +204,12 @@ describe("Update user should have validation checks for _id, username, password"
   });
 });
 
-describe("User update with correct credentials should either redirect to origin or return confirmation", () => {
+describe("User update with correct credentials should return confirmation", () => {
   beforeEach(() => {
     mockUpdateOne.mockClear();
   });
 
-  it("Update w/redirect for updating to regular user", (done) => {
-    request(app)
-      .put(`/user/${mockIdParam}`)
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/x-www-form-urlencoded")
-      .set("Origin", origin)
-      .send({
-        first_name: "Jane",
-        last_name: "Doe",
-        username: "some username",
-        current_password: "old password",
-        new_password: "new password",
-        regular: true,
-      })
-      .expect(302)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        expect(mockUpdateOne).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it("Update w/redirect for updating to privileged user", (done) => {
-    request(app)
-      .put(`/user/${mockIdParam}`)
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/x-www-form-urlencoded")
-      .set("Origin", origin)
-      .send({
-        first_name: "Jane",
-        last_name: "Doe",
-        username: "some username",
-        current_password: "old password",
-        new_password: "new password",
-        regular: true,
-        privilege_code: "1234",
-      })
-      .expect(302)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        expect(mockUpdateOne).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it("Update w/redirect for updating to admin user", (done) => {
-    request(app)
-      .put(`/user/${mockIdParam}`)
-      .set("Accept", "application/json")
-      .set("Content-Type", "application/x-www-form-urlencoded")
-      .set("Origin", origin)
-      .send({
-        first_name: "Jane",
-        last_name: "Doe",
-        username: "some username",
-        current_password: "old password",
-        new_password: "new password",
-        regular: true,
-        privilege_code: "1234",
-        admin_code: "4321",
-      })
-      .expect(302)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        expect(mockUpdateOne).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it("Update w/out redirect for updating to regular user", (done) => {
+  it("Update for updating to regular user", (done) => {
     request(app)
       .put(`/user/${mockIdParam}`)
       .set("Accept", "application/json")
@@ -329,7 +233,7 @@ describe("User update with correct credentials should either redirect to origin 
       });
   });
 
-  it("Update w/out redirect for updating to privileged user", (done) => {
+  it("Update for updating to privileged user", (done) => {
     request(app)
       .put(`/user/${mockIdParam}`)
       .set("Accept", "application/json")
@@ -354,7 +258,7 @@ describe("User update with correct credentials should either redirect to origin 
       });
   });
 
-  it("Update w/out redirect for updating to admin user", (done) => {
+  it("Update for updating to admin user", (done) => {
     request(app)
       .put(`/user/${mockIdParam}`)
       .set("Accept", "application/json")

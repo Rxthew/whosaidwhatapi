@@ -1,4 +1,3 @@
-import { connection } from "mongoose";
 import request from "supertest";
 import { Response } from "supertest";
 import app from "../../testapp";
@@ -65,13 +64,11 @@ describe("Sign up should work when saving user, but should throw error if same u
     mockSave.mockClear();
   });
 
-  const origin = "http://127.0.0.1:3000";
   databaseMockImplementation("jackdoe");
 
-  it("Expect redirection to origin with save being called", (done) => {
+  it("Expect success report with save being called", (done) => {
     request(app)
       .post("/signup")
-      .set("Origin", origin)
       .send({
         first_name: "John",
         last_name: "Doe",
@@ -80,7 +77,7 @@ describe("Sign up should work when saving user, but should throw error if same u
         privilege_code: "1234",
         admin_code: "4321",
       })
-      .expect(302)
+      .expect(200)
       .end(async (err, res) => {
         if (err) {
           return done(err);
@@ -118,71 +115,8 @@ describe("Sign up should work when saving user, but should throw error if same u
   });
 });
 
-describe("Sign up with correct credentials should redirect to origin", () => {
-  const origin = "http://127.0.0.1:3000";
-  it("Correct credentials for admin user.", (done) => {
-    request(app)
-      .post("/signup")
-      .set("Origin", origin)
-      .send({
-        first_name: "Jane",
-        last_name: "Doe",
-        username: "janedoe",
-        password: "janedoe1",
-        privilege_code: "1234",
-        admin_code: "4321",
-      })
-      .expect(302)
-      .end(async (err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        done();
-      });
-  });
-  it("Correct credentials for privileged user.", (done) => {
-    request(app)
-      .post("/signup")
-      .set("Origin", origin)
-      .send({
-        first_name: "Jane",
-        last_name: "Doe",
-        username: "janedoe",
-        password: "janedoe1",
-        privilege_code: "1234",
-      })
-      .expect(302)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        done();
-      });
-  });
-  it("Correct credentials for regular user.", (done) => {
-    request(app)
-      .post("/signup")
-      .set("Origin", origin)
-      .send({
-        first_name: "Jane",
-        last_name: "Doe",
-        username: "janedoe",
-        password: "janedoe1",
-      })
-      .expect(302)
-      .end((err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(res.header.location).toEqual(origin);
-        done();
-      });
-  });
-});
 
-describe("Signup with correct credentials without Referer should return successful sign-up report", () => {
+describe("Signup with correct credentials should return successful sign-up report", () => {
   it("Correct credentials for admin user.", (done) => {
     request(app)
       .post("/signup")

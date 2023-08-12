@@ -238,26 +238,7 @@ describe("Post creation should work if user authenticated user id is validated",
       });
   });
 
-  it("Expect post creation to redirect to origin if origin header is supplied", (done) => {
-    const origin = "http://127.0.0.1:3000";
-    toggleAuthTestVariable(true, "admin");
-
-    request(app)
-      .post("/post")
-      .set("Origin", origin)
-      .set("Accept", "application/json")
-      .send({ title: "test title", content: "test content", user: userId })
-      .expect(302)
-      .end(async (err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(mockCreate).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it("Expect post creation to return an object with post created status if origin header is not present", (done) => {
+  it("Expect post creation to return an object with post created status", (done) => {
     toggleAuthTestVariable(true, "admin");
 
     request(app)
@@ -359,26 +340,8 @@ describe("Post delete should work if user authenticated and _id is validated", (
       });
   });
 
-  it("Expect post delete to redirect to origin if Origin header is supplied", (done) => {
-    const origin = "http://127.0.0.1:3000";
-    toggleAuthTestVariable(true, "admin");
 
-    request(app)
-      .delete("/post")
-      .set("Origin", origin)
-      .set("Accept", "application/json")
-      .send({ _id: postId })
-      .expect(302)
-      .end(async (err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(mockDeleteOne).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it("Expect Post deletion to return an object with Post deleted status if origin header is not present", (done) => {
+  it("Expect Post deletion to return an object with Post deleted status", (done) => {
     toggleAuthTestVariable(true, "admin");
 
     request(app)
@@ -504,31 +467,7 @@ describe("Post update should work if user authenticated and _id is validated", (
       });
   });
 
-  it("Expect Post update to redirect to origin if origin header is supplied", (done) => {
-    const origin = "http://127.0.0.1:3000";
-    toggleAuthTestVariable(true, "admin");
-
-    request(app)
-      .put("/post")
-      .set("Origin", origin)
-      .set("Accept", "application/json")
-      .send({
-        _id: postId,
-        title: "test title",
-        content: "test content",
-        user: userId,
-      })
-      .expect(302)
-      .end(async (err, res) => {
-        if (err) {
-          return done(err);
-        }
-        expect(mockUpdateOne).toHaveBeenCalled();
-        done();
-      });
-  });
-
-  it("Expect Post update to return an object with Post updated status if origin header is not present", (done) => {
+  it("Expect Post update to return an object with Post updated status", (done) => {
     toggleAuthTestVariable(true, "admin");
 
     request(app)
