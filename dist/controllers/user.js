@@ -231,7 +231,6 @@ exports.deleteUserController = [
   (0, express_validator_1.param)("id").custom(services_1.userExistsInDatabase),
   deleteUserValidation,
   deleteUser,
-  services_1.redirectToOrigin,
   confirmDelete,
 ];
 exports.putUserController = [
@@ -288,6 +287,5 @@ exports.putUserController = [
   reassignMembership,
   establishUpdateBody,
   updateUser,
-  services_1.redirectToOrigin,
   confirmUpdate,
 ];

@@ -45,8 +45,6 @@ const loginController = [
     .escape(),
   loginValidation,
   authenticateUser,
-  services_1.redirectToReferringPage,
-  services_1.redirectToOrigin,
   supplyUserInfo,
   confirmLogin,
 ];

@@ -170,7 +170,6 @@ exports.deleteCommentController = [
   commentValidation,
   checkCommentOwnership,
   deleteComment,
-  services_1.redirectToOrigin,
   confirmCommentDeleted,
 ];
 exports.postCommentController = [
@@ -204,7 +203,6 @@ exports.postCommentController = [
   (0, express_validator_1.body)("user").custom(services_1.userExistsInDatabase),
   commentValidation,
   createComment,
-  services_1.redirectToOrigin,
   confirmCommentCreated,
 ];
 exports.putCommentController = [
@@ -247,6 +245,5 @@ exports.putCommentController = [
   commentValidation,
   checkCommentOwnership,
   updateComment,
-  services_1.redirectToOrigin,
   confirmCommentUpdated,
 ];

@@ -30,7 +30,7 @@ const password = process.env.password;
 const applicableCORS =
   process.env.NODE_ENV === "production" && process.env.origin
     ? cors({ origin: process.env.origin, credentials: true })
-    : cors({origin: "http://localhost:5173", credentials: true});
+    : cors({ origin: "http://localhost:5173", credentials: true });
 
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`;
 mongoose.connect(mongoDb);

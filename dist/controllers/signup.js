@@ -111,7 +111,6 @@ const signUpController = [
   signUpValidation,
   assignMembership,
   saveUser,
-  services_1.redirectToOrigin,
   confirmSignup,
 ];
 exports.default = signUpController;

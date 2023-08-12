@@ -156,7 +156,6 @@ exports.deletePostController = [
   postValidation,
   checkPostOwnership,
   deletePost,
-  services_1.redirectToOrigin,
   confirmPostDeleted,
 ];
 exports.postPostController = [
@@ -186,7 +185,6 @@ exports.postPostController = [
   (0, express_validator_1.body)("user").custom(services_1.userExistsInDatabase),
   postValidation,
   createPost,
-  services_1.redirectToOrigin,
   confirmPostCreated,
 ];
 exports.putPostController = [
@@ -225,6 +223,5 @@ exports.putPostController = [
   postValidation,
   checkPostOwnership,
   updatePost,
-  services_1.redirectToOrigin,
   confirmPostUpdated,
 ];

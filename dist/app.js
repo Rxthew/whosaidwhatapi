@@ -32,8 +32,11 @@ const username = process.env.username;
 const password = process.env.password;
 const applicableCORS =
   process.env.NODE_ENV === "production" && process.env.origin
-    ? (0, cors_1.default)({ origin: process.env.origin })
-    : (0, cors_1.default)();
+    ? (0, cors_1.default)({ origin: process.env.origin, credentials: true })
+    : (0, cors_1.default)({
+        origin: "http://localhost:5173",
+        credentials: true,
+      });
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`;
 mongoose_1.default.connect(mongoDb);
 const db = mongoose_1.default.connection;
@@ -43,6 +46,7 @@ const secret = process.env.secret ?? "development_secret";
 const sessionStore = connect_mongo_1.default.create({
   mongoUrl: mongoDb,
 });
+app.use(applicableCORS);
 app.use(
   (0, express_session_1.default)({
     secret,
@@ -87,7 +91,6 @@ passport_1.default.deserializeUser(async (id, done) => {
 });
 app.use(passport_1.default.initialize());
 app.use(passport_1.default.session());
-app.use(applicableCORS);
 app.use((0, method_override_1.default)("_method"));
 app.use((0, morgan_1.default)("dev"));
 app.use(express_1.default.json());

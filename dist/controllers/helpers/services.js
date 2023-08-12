@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.userExistsInDatabase = exports.returnIndexData = exports.redirectToOrigin = exports.redirectToReferringPage = exports.postExistsInDatabase = exports.noDuplicateUsernames = exports.hashPassword = exports.generateDate = exports.getUser = exports.checkUserIsAuthenticated = exports.checkValidityOfUserId = exports.checkValidityOfPostId = exports.basicValidation = void 0;
+exports.userExistsInDatabase = exports.returnIndexData = exports.postExistsInDatabase = exports.noDuplicateUsernames = exports.hashPassword = exports.generateDate = exports.getUser = exports.checkUserIsAuthenticated = exports.checkValidityOfUserId = exports.checkValidityOfPostId = exports.basicValidation = void 0;
 const bcryptjs_1 = __importDefault(require("bcryptjs"));
 const express_validator_1 = require("express-validator");
 const luxon_1 = require("luxon");
@@ -105,16 +105,6 @@ const postExistsInDatabase = async function (id) {
     return result || postError();
 };
 exports.postExistsInDatabase = postExistsInDatabase;
-const redirectToReferringPage = function (req, res, next) {
-    const referer = req.get("Referer");
-    return referer ? res.redirect(referer) : next();
-};
-exports.redirectToReferringPage = redirectToReferringPage;
-const redirectToOrigin = function (req, res, next) {
-    const origin = req.get("Origin");
-    return origin ? res.redirect(origin) : next();
-};
-exports.redirectToOrigin = redirectToOrigin;
 const returnIndexData = function (req, res, next) {
     const responseBody = { posts: req.body.posts };
     req.body.user ? Object.assign(responseBody, { user: req.body.user }) : false;
