@@ -51,6 +51,8 @@ const getUser = async function (req, res, next) {
             user
                 ? Object.assign(req.body, {
                     user: {
+                        first_name: user.first_name,
+                        last_name: user.last_name,
                         username: user.username,
                         member_status: user.member_status,
                         _id: user._id,
