@@ -172,6 +172,24 @@ const establishUpdateBody = function (req, res, next) {
       });
   next();
 };
+const filterNames = function (req, res, next) {
+  const _filterSameName = function (property) {
+    const userProperty = property;
+    const currentName =
+      req.user && req.user[userProperty] ? req.user[userProperty] : undefined;
+    const inputName = req.body[property];
+    const sameName = currentName && inputName && currentName === inputName;
+    return sameName ? delete req.body[property] : sameName;
+  };
+  const _filterFalsyValues = function (property) {
+    return req.body[property] ? true : delete req.body[property];
+  };
+  const formDataProperties = Object.keys(req.body);
+  formDataProperties.map(_filterFalsyValues);
+  formDataProperties.map(_filterSameName);
+  next();
+  return;
+};
 const reassignMembership = function (req, res, next) {
   const adminMember = function () {
     const isAdminValid = req.body.admin_code && req.body.admin_code === "4321";
@@ -242,6 +260,7 @@ exports.putUserController = [
     .escape(),
   (0, express_validator_1.param)("id").custom(services_1.checkValidityOfUserId),
   (0, express_validator_1.param)("id").custom(services_1.userExistsInDatabase),
+  filterNames,
   (0, express_validator_1.body)("first_name")
     .optional({ checkFalsy: true })
     .trim()

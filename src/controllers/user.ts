@@ -229,6 +229,27 @@ const establishUpdateBody = function (
   next();
 };
 
+const filterNames = function (req: Request, res: Response, next: NextFunction) {
+  const _filterSameName = function (property: string) {
+    const userProperty = property as keyof InstanceType<typeof User>;
+    const currentName =
+      req.user && req.user[userProperty] ? req.user[userProperty] : undefined;
+    const inputName = req.body[property];
+    const sameName = currentName && inputName && currentName === inputName;
+    return sameName ? delete req.body[property] : sameName;
+  };
+
+  const _filterFalsyValues = function (property: string) {
+    return req.body[property] ? true : delete req.body[property];
+  };
+
+  const formDataProperties = Object.keys(req.body);
+  formDataProperties.map(_filterFalsyValues);
+  formDataProperties.map(_filterSameName);
+  next();
+  return;
+};
+
 const reassignMembership = function (
   req: Request,
   res: Response,
@@ -315,6 +336,7 @@ export const putUserController = [
     .escape(),
   param("id").custom(checkValidityOfUserId),
   param("id").custom(userExistsInDatabase),
+  filterNames,
   body("first_name")
     .optional({ checkFalsy: true })
     .trim()
