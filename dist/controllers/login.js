@@ -9,13 +9,7 @@ const express_validator_1 = require("express-validator");
 const passport_1 = __importDefault(require("passport"));
 const services_1 = require("./helpers/services");
 const authenticateUser = function (req, res, next) {
-  const referer = req.get("Referer");
-  return referer
-    ? passport_1.default.authenticate("local", {
-        failureRedirect: referer,
-        failureMessage: true,
-      })(req, res, next)
-    : passport_1.default.authenticate("local")(req, res, next);
+  return passport_1.default.authenticate("local")(req, res, next);
 };
 const confirmLogin = function (req, res, next) {
   res.json({ status: "Login successful." });

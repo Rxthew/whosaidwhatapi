@@ -8,13 +8,7 @@ const authenticateUser = function (
   res: Response,
   next: NextFunction
 ) {
-  const referer = req.get("Referer");
-  return referer
-    ? passport.authenticate("local", {
-        failureRedirect: referer,
-        failureMessage: true,
-      })(req, res, next)
-    : passport.authenticate("local")(req, res, next);
+  passport.authenticate("local")(req, res, next);
 };
 
 const confirmLogin = function (
