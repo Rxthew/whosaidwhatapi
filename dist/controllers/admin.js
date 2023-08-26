@@ -6,6 +6,10 @@ const getDetailedPosts = async function (req, res, next) {
   try {
     const posts = await post_1.Post.find({})
       .populate({
+        path: "user",
+        select: "username _id",
+      })
+      .populate({
         path: "comments",
         select: "content date user _id -post",
         populate: {

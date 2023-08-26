@@ -6,6 +6,10 @@ const getWithAnonymisedComments = async function () {
   try {
     const posts = await post_1.Post.find({ published_status: true })
       .populate({
+        path: "user",
+        select: "username _id",
+      })
+      .populate({
         path: "comments",
         select: "content date _id -post",
       })
@@ -18,6 +22,10 @@ const getWithAnonymisedComments = async function () {
 const getWithPopulatedComments = async function () {
   try {
     const posts = await post_1.Post.find({ published_status: true })
+      .populate({
+        path: "user",
+        select: "username _id",
+      })
       .populate({
         path: "comments",
         select: "content date user _id -post",
