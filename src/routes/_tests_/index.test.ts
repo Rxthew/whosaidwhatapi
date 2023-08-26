@@ -7,15 +7,19 @@ jest.mock("../../models/post");
 const generateMocks = function () {
   const mockFind = jest.fn(() => {
     return {
-      populate: (obj: Record<string, any>) => {
+      populate: () => {
         return {
-          exec: () => {
+          populate: (obj: Record<string,any>) => {
             return {
-              comment_author: obj.select.includes("user")
-                ? "visible"
-                : "anonymous",
-            };
+              exec: () => {
+                return {
+                  comment_author: obj.select.includes("user")
+                    ? "visible"
+                    : "anonymous",
+                };
           },
+            }
+          }
         };
       },
     };

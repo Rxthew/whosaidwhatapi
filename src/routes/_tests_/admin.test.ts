@@ -6,13 +6,21 @@ import { Post } from "../../models/post";
 jest.mock("../../models/post");
 
 const generateMocks = function () {
-  const mockFind = jest.fn().mockImplementation(() => {
+  const mockFind = jest.fn(() => {
     return {
-      populate: (obj: Record<string, any>) => {
+      populate: () => {
         return {
-          exec: () => {
-            return {};
+          populate: (obj: Record<string,any>) => {
+            return {
+              exec: () => {
+                return {
+                  comment_author: obj.select.includes("user")
+                    ? "visible"
+                    : "anonymous",
+                };
           },
+            }
+          }
         };
       },
     };
@@ -25,7 +33,7 @@ const generateMocks = function () {
 
 const { mockFind } = generateMocks();
 
-Post.find = mockFind;
+(Post as Record<"find", any>).find = mockFind;
 
 const checkIfErrorsPresent = function (res: Response) {
   if (!("errors" in res.body)) {
