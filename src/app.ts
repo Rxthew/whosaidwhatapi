@@ -28,8 +28,8 @@ dotenv.config();
 const username = process.env.username;
 const password = process.env.password;
 const applicableCORS =
-  process.env.NODE_ENV === "production" && process.env.origin
-    ? cors({ origin: process.env.origin, credentials: true })
+  process.env.NODE_ENV === "production" && process.env.mainOrigin && process.env.adminOrigin
+    ? cors({ origin: [process.env.mainOrigin, process.env.adminOrigin], credentials: true })
     : cors({ origin: "http://localhost:5173", credentials: true });
 
 const mongoDb = `mongodb+srv://${username}:${password}@cluster0.jsx1fwc.mongodb.net/?retryWrites=true&w=majority`;
