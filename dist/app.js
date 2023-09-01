@@ -31,8 +31,8 @@ dotenv_1.default.config();
 const username = process.env.username;
 const password = process.env.password;
 const applicableCORS =
-  process.env.NODE_ENV === "production" && process.env.mainOrigin && process.env.adminOrigin
-    ? (0, cors_1.default)({ origin: [process.env.mainOrigin, process.env.adminOrigin], credentials: true })
+  process.env.NODE_ENV === "production" && process.env.origin
+    ? (0, cors_1.default)({ origin: process.env.origin, credentials: true })
     : (0, cors_1.default)({
         origin: "http://localhost:5173",
         credentials: true,
